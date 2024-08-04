@@ -66,7 +66,7 @@ function getPixel(x, y) {
 
 function plotPixel(labL, labA, labB, colorCode) {
     const canvasCoordsMax = 44;
-    const abMax = 50;
+    const abMax = 100;
     const abToCanvasCoords = canvasCoordsMax / abMax;
     centerPixel.setAttribute('cx', 50 + labA * abToCanvasCoords);
     centerPixel.setAttribute('cy', 50 - labB * abToCanvasCoords);
