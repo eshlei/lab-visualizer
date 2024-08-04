@@ -21,6 +21,14 @@ function startCamera() {
         video.play();
     })
     .catch(err => {
+        navigator.mediaDevices.getUserMedia({video: true })
+        .then(stream => {
+            video.srcObject = stream;
+            video.play();
+        })
+        return err;
+    })
+    .catch(err => {
         console.error('Error accessing the camera: ', err);
         alert('Error accessing the camera: ', err);
     });
@@ -73,7 +81,7 @@ function plotPixel(labL, labA, labB, colorCode) {
     centerPixel.setAttribute('cy', 50 - labB * abToCanvasCoords);
     centerPixel.setAttribute('fill', colorCode);
 
-    centerPixelText.innerText(`L:${labL}, a:${labA}, b:${labB}`);
+    centerPixelText.textContent = `L:${Math.round(labL)}, a:${Math.round(labA)}, b:${Math.round(labB)}`;
 }
 
 setInterval(() => {
