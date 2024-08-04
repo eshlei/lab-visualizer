@@ -81,7 +81,9 @@ setInterval(() => {
 
     // Update plot
     plotPixel(labL, labA, labB, `RGB(${rgbR},${rgbG},${rgbB})`);
-}, 100);
+
+    alert('canvas updated!')
+}, 1000);
 
 analysis.addEventListener("click", () => {
     const [ rgbR, rgbG, rgbB ] = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
