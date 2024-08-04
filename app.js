@@ -94,9 +94,9 @@ class StandardObserver {
         const z3 = Math.pow(z, 3);
 
         // Convert to reference white
-        const xr = x3 > 0.008856 ? x3 : (x - 16 / 116) / 7.787;
-        const yr = y3 > 0.008856 ? y3 : (y - 16 / 116) / 7.787;
-        const zr = z3 > 0.008856 ? z3 : (z - 16 / 116) / 7.787;
+        let xr = x3 > 0.008856 ? x3 : (x - 16 / 116) / 7.787;
+        let yr = y3 > 0.008856 ? y3 : (y - 16 / 116) / 7.787;
+        let zr = z3 > 0.008856 ? z3 : (z - 16 / 116) / 7.787;
 
         xr *= this.whiteX;
         yr *= this.whiteY;
@@ -106,13 +106,15 @@ class StandardObserver {
     }
 
     labToRgb(l, a, b) {
-        const { x, y, z } = this.labToXyz(l, a, b);
-        return this.xyzToRgb(x, y, z);
+        const xyz = this.labToXyz(l, a, b);
+        const rgb = this.xyzToRgb(xyz.x, xyz.y, xyz.z);
+        return rgb;
     }
     
     rgbToLab(r, g, b) {
-        const { x, y, z } = this.rgbToXyz(r, g, b);
-        return this.xyzToLab(x, y, z);
+        const xyz = this.rgbToXyz(r, g, b);
+        const lab = this.xyzToLab(xyz.x, xyz.y, xyz.z);
+        return lab;
     }
 }
 
@@ -164,13 +166,17 @@ function getPixel(x, y) {
     return {r: meanRgb.r, g: meanRgb.g, b: meanRgb.b };
 }
 
-function plotPixel(lab, colorCode) {
+function plotPixel(lab) {
+
+    // Convert to D65 illumination
+    const rgb = d65Observer.labToRgb(lab.l, lab.a, lab.b);
+    
     const canvasCoordsMax = 44;
     const abMax = 100;
     const abToCanvasCoords = canvasCoordsMax / abMax;
     centerPixel.setAttribute('cx', 50 + lab.a * abToCanvasCoords);
     centerPixel.setAttribute('cy', 50 - lab.b * abToCanvasCoords);
-    centerPixel.setAttribute('fill', colorCode);
+    centerPixel.setAttribute('fill', `RGB(${rgb.r},${rgb.g},${rgb.b})`);
 
     centerPixelText.textContent = `L:${Math.round(lab.l)}, a:${Math.round(lab.a)}, b:${Math.round(lab.b)}`;
 }
@@ -199,7 +205,7 @@ setInterval(() => {
     meanLab.b /= recentSamplesLen;
 
     // Update plot
-    plotPixel(meanLab, `RGB(${rgb.r},${rgb.g},${rgb.b})`);
+    plotPixel(meanLab);
 }, 100);
 
 analysis.addEventListener("click", () => {
