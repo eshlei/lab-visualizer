@@ -60,7 +60,7 @@ function getPixel(x, y) {
         g += data[4 * i + 1];
         b += data[4 * i + 2];
     }
-    console.log(r / pixelCount, g / pixelCount, b / pixelCount);
+    // console.log(r / pixelCount, g / pixelCount, b / pixelCount);
     return [ r / pixelCount, g / pixelCount, b / pixelCount ];
 }
 
@@ -71,6 +71,7 @@ function plotPixel(labL, labA, labB, colorCode) {
     centerPixel.style.cx = 50 + labA * abToCanvasCoords;
     centerPixel.style.cy = 50 - labB * abToCanvasCoords;
     centerPixel.style.fill = colorCode;
+    alert(`(${centerPixel.style.cx}, ${centerPixel.style.cy})`);
 }
 
 setInterval(() => {
