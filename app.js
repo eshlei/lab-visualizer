@@ -13,23 +13,19 @@ var backgroundZ = 1.08883; // D65 white point
 
 // Request camera access
 function startCamera() {
-    navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { exact: 'environment' } }
-    })
+    navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: 'environment'}}})
     .then(stream => {
         video.srcObject = stream;
         video.play();
     })
     .catch(err => {
-        navigator.mediaDevices.getUserMedia({video: true })
+        navigator.mediaDevices.getUserMedia({video: true})
         .then(stream => {
             video.srcObject = stream;
             video.play();
         })
-        return err;
     })
     .catch(err => {
-        console.error('Error accessing the camera: ', err);
         alert('Error accessing the camera: ', err);
     });
 }
@@ -75,7 +71,7 @@ function getPixel(x, y) {
 
 function plotPixel(labL, labA, labB, colorCode) {
     const canvasCoordsMax = 44;
-    const abMax = 150;
+    const abMax = 100;
     const abToCanvasCoords = canvasCoordsMax / abMax;
     centerPixel.setAttribute('cx', 50 + labA * abToCanvasCoords);
     centerPixel.setAttribute('cy', 50 - labB * abToCanvasCoords);
@@ -100,7 +96,11 @@ setInterval(() => {
 analysis.addEventListener("click", () => {
     const [ rgbR, rgbG, rgbB ] = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
     [ backgroundX, backgroundY, backgroundZ ] = rgbToXyz(rgbR, rgbG, rgbB);
-    alert(`Set reference white to XYZ(${backgroundX.toFixed(2)}, ${backgroundY.toFixed(2)}, ${backgroundZ.toFixed(2)})`);
+    // alert(`Set reference white to XYZ(${backgroundX.toFixed(2)}, ${backgroundY.toFixed(2)}, ${backgroundZ.toFixed(2)})`);
+    analysisContainer.style.background = "#909090";
+    setTimeout(() => {
+        analysisContainer.style.background = "#e0e0e0";
+      }, 300);
 })
 
 window.onresize = () => {

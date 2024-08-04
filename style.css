@@ -3,7 +3,7 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f0f0f0;
+  background: #e0e0e0;
   margin: 0;
 }
 
@@ -13,6 +13,7 @@ canvas {
 
 #analysis-container{
   aspect-ratio: 1/1;
+  background: #e0e0e0;
   padding: 5px;
 }
 
