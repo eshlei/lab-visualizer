@@ -89,7 +89,7 @@ setInterval(() => {
 
     // console.log(`(${centerPixel.style.cx}, ${centerPixel.style.cx})`);
     // console.log(`L: ${labL.toFixed(2)}, a: ${labA.toFixed(2)}, b: ${labB.toFixed(2)}`);
-}, 100);
+}, 1000);
 
 analysis.addEventListener("click", () => {
     const [ r, g, b ] = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
