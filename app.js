@@ -100,9 +100,11 @@ analysis.addEventListener("click", () => {
     alert(`Set reference white to XYZ(${x.toFixed(2)}, ${x.toFixed(2)}, ${x.toFixed(2)})`);
 })
 
+/*
 window.onresize = () => {
     location.reload();
 }
+*/
 
 // Convert RGB to XYZ
 function rgbToXyz(r, g, b) {
