@@ -31,14 +31,9 @@ class StandardObserver {
         b = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
         
         // Convert to XYZ using the D65 illuminant
-        let x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
-        let y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
-        let z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
-
-        // Scale by reference white
-        x *= this.whiteX;
-        y *= this.whiteY;
-        z *= this.whiteZ;
+        const x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
+        const y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
+        const z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
     
         return { x, y, z };
     }
@@ -63,10 +58,6 @@ class StandardObserver {
     }
 
     xyzToRgb(x, y, z) {
-        // Normalize by reference white
-        x /= this.whiteX;
-        y /= this.whiteY;
-        z /= this.whiteZ;
 
         // Convert XYZ to linear RGB
         let r = x * 3.2406 + y * -1.5372 + z * -0.4986;
@@ -126,11 +117,11 @@ class StandardObserver {
 }
 
 
-const sampleWindow = 10; // Sample a 10x10 pixel area
-const recentLabsCount = 10; // The number of Labs to take average of
 const envObserver = new StandardObserver();
 const d65Observer = new StandardObserver();
-var recentLabs = [];
+const sampleWidth = 10; // Sample a 10x10 pixel area
+const recentSamplesLen = 10; // Take the average of the past 3 samples
+var recentSamples = [];
 
 // Update canvas with video feed
 function updateCanvas() {
@@ -152,15 +143,15 @@ function updateCanvas() {
 
     // Redraw rectangle
     context.beginPath();
-    context.rect(canvasWidth / 2 - sampleWindow / 2, canvasHeight / 2 - sampleWindow / 2, sampleWindow, sampleWindow);
+    context.rect(canvasWidth / 2 - sampleWidth / 2, canvasHeight / 2 - sampleWidth / 2, sampleWidth, sampleWidth);
     context.stroke();
 }
 
 // Get RGB values of a pixel
 function getPixel(x, y) {
-    const data = context.getImageData(x - sampleWindow / 2, y - sampleWindow / 2, sampleWindow, sampleWindow).data;
+    const data = context.getImageData(x - sampleWidth / 2, y - sampleWidth / 2, sampleWidth, sampleWidth).data;
     
-    const pixelCount = sampleWindow * sampleWindow;
+    const pixelCount = sampleWidth * sampleWidth;
     var meanRgb = { r: 0, g: 0, b: 0 };
     for (let i = 0; i < pixelCount; i++) {
         meanRgb.r += data[4 * i];
@@ -193,20 +184,19 @@ setInterval(() => {
     const lab = envObserver.rgbToLab(rgb.r, rgb.g, rgb.b);
 
     // Push to queue and calculate mean
-    recentLabs.push(lab);
-    if (recentLabs.length > recentLabsCount) {
-        recentLabs.shift();
+    recentSamples.push(lab);
+    if (recentSamples.length > recentSamplesLen) {
+        recentSamples.shift();
     }
     let meanLab = { l: 0, a: 0, b: 0 };
-    for (let idx in recentLabs) {
-        meanLab.l += recentLabs[idx].l;
-        meanLab.a += recentLabs[idx].a;
-        meanLab.b += recentLabs[idx].b;
-        console.log(recentLabs[idx]);
+    for (let idx in recentSamples) {
+        meanLab.l += recentSamples[idx].l;
+        meanLab.a += recentSamples[idx].a;
+        meanLab.b += recentSamples[idx].b;
     }
-    meanLab.l /= recentLabsCount;
-    meanLab.a /= recentLabsCount;
-    meanLab.b /= recentLabsCount;
+    meanLab.l /= recentSamplesLen;
+    meanLab.a /= recentSamplesLen;
+    meanLab.b /= recentSamplesLen;
 
     // Update plot
     plotPixel(meanLab, `RGB(${rgb.r},${rgb.g},${rgb.b})`);
