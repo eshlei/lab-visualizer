@@ -1,32 +1,34 @@
 body {
   width: 100vw;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #e0e0e0;
   margin: 0;
 }
 
-canvas {
-  flex: 1;
+div {
+  background: #f0f0f0;
 }
 
-#analysis-container{
-  aspect-ratio: 1/1;
-  background: #e0e0e0;
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.canvas-container {
+  flex: 1;
+  display: flex;
   padding: 5px;
 }
 
-#analysis {
+#canvas {
   width: 100%;
   height: 100%;
   border-radius: 5px;
-  background-color: white;
 }
 
-#plot {
-  width: 100%;
-  height: 100%;
+.analysis-container {
+  aspect-ratio: 1/1;
 }
 
 #camera {
