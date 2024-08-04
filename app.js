@@ -71,40 +71,27 @@ function plotPixel(labL, labA, labB, colorCode) {
 }
 
 setInterval(() => {
-
     // Update canvas using video feed
     updateCanvas();
 
     // Get center pixel and map to CIELab
-    const [ r, g, b ] = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
-    const [ x, y, z ] = rgbToXyz(r, g, b);
-    const lab = xyzToLab(x, y, z, backgroundX, backgroundY, backgroundZ);
-
-    const labL = lab[0];
-    const labA = lab[1];
-    const labB = lab[2];
+    const [ rgbR, rgbG, rgbB ] = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
+    const [ xyzX, xyzY, xyzZ ] = rgbToXyz(rgbR, rgbG, rgbB);
+    const [ labL, labA, labB ] = xyzToLab(xyzX, xyzY, xyzZ, backgroundX, backgroundY, backgroundZ);
 
     // Update plot
-    plotPixel(labL, labA, labB, `RGB(${r},${g},${b})`);
-
-    // console.log(`(${centerPixel.style.cx}, ${centerPixel.style.cx})`);
-    // console.log(`L: ${labL.toFixed(2)}, a: ${labA.toFixed(2)}, b: ${labB.toFixed(2)}`);
-}, 1000);
+    plotPixel(labL, labA, labB, `RGB(${rgbR},${rgbG},${rgbB})`);
+}, 100);
 
 analysis.addEventListener("click", () => {
-    const [ r, g, b ] = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
-    const [ x, y, z ] = rgbToXyz(r, g, b);
-    backgroundX = x;
-    backgroundY = y;
-    backgroundZ = z;
-    alert(`Set reference white to XYZ(${x.toFixed(2)}, ${x.toFixed(2)}, ${x.toFixed(2)})`);
+    const [ rgbR, rgbG, rgbB ] = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
+    [ backgroundX, backgroundY, backgroundZ ] = rgbToXyz(rgbR, rgbG, rgbB);
+    alert(`Set reference white to XYZ(${backgroundX.toFixed(2)}, ${backgroundY.toFixed(2)}, ${backgroundZ.toFixed(2)})`);
 })
 
-/*
 window.onresize = () => {
     location.reload();
 }
-*/
 
 // Convert RGB to XYZ
 function rgbToXyz(r, g, b) {
