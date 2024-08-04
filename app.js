@@ -10,7 +10,9 @@ var backgroundX = 0.95047; // D65 white point
 var backgroundY = 1.00000; // D65 white point
 var backgroundZ = 1.08883; // D65 white point
 
-var queue = [0, 0, 10]
+video.setAttribute('autoplay', '');
+video.setAttribute('muted', '');
+video.setAttribute('playsinline', '')
 
 // Request camera access
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -20,6 +22,7 @@ navigator.mediaDevices.getUserMedia({ video: true })
     })
     .catch(err => {
         console.error('Error accessing the camera: ', err);
+        alert('Error accessing the camera: ', err);
     });
 
 // Update canvas with video feed
