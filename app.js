@@ -3,8 +3,14 @@ const analysisContainer = document.getElementById('analysis-container');
 const analysis = document.getElementById('analysis');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d', { willReadFrequently: true });
-const centerPixel = document.getElementById('center-pixel')
+const centerPixel = document.getElementById('center-pixel');
+
 const sampleWindow = 10;
+var backgroundX = 0.95047; // D65 white point
+var backgroundY = 1.00000; // D65 white point
+var backgroundZ = 1.08883; // D65 white point
+
+var queue = [0, 0, 10]
 
 // Request camera access
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -36,7 +42,7 @@ function updateCanvas() {
 
     // Redraw circle
     context.beginPath();
-    context.rect(canvasWidth / 2 - 5, canvasHeight / 2 - 5, 10, 10);
+    context.rect(canvasWidth / 2 - sampleWindow / 2, canvasHeight / 2 - sampleWindow / 2, sampleWindow, sampleWindow);
     context.stroke();
 }
 
@@ -65,16 +71,15 @@ function plotPixel(labL, labA, labB, colorCode) {
 }
 
 setInterval(() => {
-    const centerX = Math.floor(canvas.offsetWidth / 2);
-    const centerY = Math.floor(canvas.offsetHeight / 2);
 
     // Update canvas using video feed
     updateCanvas();
 
     // Get center pixel and map to CIELab
-    const [ r, g, b ] = getPixel(centerX, centerY);
-    console.log(r, g, b);
-    const lab = chroma.rgb(r, g, b).lab();
+    const [ r, g, b ] = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
+    const [ x, y, z ] = rgbToXyz(r, g, b);
+    const lab = xyzToLab(x, y, z, backgroundX, backgroundY, backgroundZ);
+
     const labL = lab[0];
     const labA = lab[1];
     const labB = lab[2];
@@ -82,14 +87,56 @@ setInterval(() => {
     // Update plot
     plotPixel(labL, labA, labB, `RGB(${r},${g},${b})`);
 
-    console.log(`(${centerPixel.style.cx}, ${centerPixel.style.cx})`);
-
+    // console.log(`(${centerPixel.style.cx}, ${centerPixel.style.cx})`);
     // console.log(`L: ${labL.toFixed(2)}, a: ${labA.toFixed(2)}, b: ${labB.toFixed(2)}`);
 }, 100);
 
+analysis.addEventListener("click", () => {
+    const [ r, g, b ] = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
+    const [ x, y, z ] = rgbToXyz(r, g, b);
+    backgroundX = x;
+    backgroundY = y;
+    backgroundZ = z;
+    alert(`Set reference white to XYZ(${x.toFixed(2)}, ${x.toFixed(2)}, ${x.toFixed(2)})`);
+})
+
 window.onresize = () => {
-    canvasWidth = canvas.offsetWidth;
-    canvasHeight = canvas.offsetHeight;
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
+    location.reload();
+}
+
+// Convert RGB to XYZ
+function rgbToXyz(r, g, b) {
+    // Convert RGB to a range of [0, 1]
+    r /= 255;
+    g /= 255;
+    b /= 255;
+  
+    // Apply gamma correction
+    r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+    g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+    b = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+    
+    // Convert to XYZ using the D65 illuminant
+    const x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
+    const y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
+    const z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
+  
+    return [ x, y, z ];
+  }
+  
+// Convert XYZ to CIELAB
+function xyzToLab(x, y, z, refX, refY, refZ) {
+    x /= refX;
+    y /= refY;
+    z /= refZ;
+  
+    x = x > 0.008856 ? Math.pow(x, 1/3) : (7.787 * x) + (16 / 116);
+    y = y > 0.008856 ? Math.pow(y, 1/3) : (7.787 * y) + (16 / 116);
+    z = z > 0.008856 ? Math.pow(z, 1/3) : (7.787 * z) + (16 / 116);
+  
+    const l = (116 * y) - 16;
+    const a = 500 * (x - y);
+    const b = 200 * (y - z);
+  
+    return [ l, a, b ];
 }
