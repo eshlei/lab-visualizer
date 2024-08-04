@@ -7,13 +7,25 @@ body {
   margin: 0;
 }
 
-
-#plot {
-  aspect-ratio: 1/1;
+canvas {
+  flex: 1;
 }
 
-#canvas {
-  flex: 1;
+#analysis-container{
+  aspect-ratio: 1/1;
+  padding: 5px;
+}
+
+#analysis {
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  background-color: white;
+}
+
+#plot {
+  width: 100%;
+  height: 100%;
 }
 
 #camera {

@@ -3,14 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Detection App</title>
+
+    <title>LAB Visualizer</title>
 </head>
-<body id="body">
+<body>
     <video id="camera" autoplay></video>
     
-    <div id="plot"></div>
     <canvas id="canvas"></canvas>
-
+    <div id="analysis-container">
+        <div id="analysis">
+            <svg id="ab-plot" viewbox="0 0 100 100">
+                <!-- a*-axis -->
+                <line x1="2" y1="50" x2="98" y2="50" stroke="#c0c0c0" stroke-width="0.3" stroke-linecap="round"></line>
+                <line x1="98" y1="50" x2="97" y2="49" stroke="#c0c0c0" stroke-width="0.3" stroke-linecap="round"></line>
+                <line x1="98" y1="50" x2="97" y2="51" stroke="#c0c0c0" stroke-width="0.3" stroke-linecap="round"></line>
+                <!-- b*-axis -->
+                <line x1="50" y1="2" x2="50" y2="98" stroke="#c0c0c0" stroke-width="0.3" stroke-linecap="round"></line>
+                <line x1="50" y1="2" x2="49" y2="3" stroke="#c0c0c0" stroke-width="0.3" stroke-linecap="round"></line>
+                <line x1="50" y1="2" x2="51" y2="3" stroke="#c0c0c0" stroke-width="0.3" stroke-linecap="round"></line>
+                <!-- circles -->
+                <circle cx="50" cy="50" r="11" stroke="#d0d0d0" stroke-width="0.1" fill="none"></circle>
+                <circle cx="50" cy="50" r="22" stroke="#d0d0d0" stroke-width="0.1" fill="none"></circle>
+                <circle cx="50" cy="50" r="33" stroke="#d0d0d0" stroke-width="0.1" fill="none"></circle>
+                <circle cx="50" cy="50" r="44" stroke="#d0d0d0" stroke-width="0.1" fill="none"></circle>
+                <!-- center pixel -->
+                <circle id="center-pixel" cx="50" cy="50" r="2" stroke="#d0d0d0" stroke-width="0.1" fill="none"></circle>
+            </svg>
+        </div>
+    </div>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
     <script src="app.js"></script>
     <link rel="stylesheet" href="style.css">

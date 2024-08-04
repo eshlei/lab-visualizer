@@ -1,8 +1,10 @@
-// app.js
 const video = document.getElementById('camera');
-const plot = document.getElementById('plot');
+const analysisContainer = document.getElementById('analysis-container');
+const analysis = document.getElementById('analysis');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d', { willReadFrequently: true });
+const centerPixel = document.getElementById('center-pixel')
+const sampleWindow = 10;
 
 // Request camera access
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -14,42 +16,80 @@ navigator.mediaDevices.getUserMedia({ video: true })
         console.error('Error accessing the camera: ', err);
     });
 
-// Function to capture the center pixel color
-function captureColor() {
-
+// Update canvas with video feed
+function updateCanvas() {
+    // Remeasure canvas and video width
     const canvasWidth = canvas.offsetWidth;
     const canvasHeight = canvas.offsetHeight;
     const videoWidth = video.videoWidth;
     const videoHeight = video.videoHeight;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
 
-    // Crop the video
+    // Update canvas
     var scale = Math.max(canvasWidth / videoWidth, canvasHeight / videoHeight);
     sWidth = canvasWidth / scale;
     sHeight = canvasHeight / scale;
     sx = (videoWidth - sWidth) / 2;
     sy = (videoHeight - sHeight) / 2;
-
-    console.log(scale)
-    console.log(canvasWidth, canvasHeight, videoWidth, videoHeight)
-    console.log(sx, sWidth, sy, sHeight)
-
     context.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvasWidth, canvasHeight);
 
-    // Get the center pixel
-    const centerX = Math.floor(videoWidth / 2);
-    const centerY = Math.floor(videoHeight / 2);
-    const imageData = context.getImageData(centerX, centerY, 1, 1).data;
-    const [r, g, b] = imageData;
-
-    return { r, g, b };
+    // Redraw circle
+    context.beginPath();
+    context.rect(canvasWidth / 2 - 5, canvasHeight / 2 - 5, 10, 10);
+    context.stroke();
 }
 
-// Update the color periodically
-setInterval(() => {
-    const { r, g, b } = captureColor();
-    const lab = chroma.rgb(r, g, b).lab();
+// Get RGB values of a pixel
+function getPixel(x, y) {
+    const data = context.getImageData(x - sampleWindow / 2, y - sampleWindow / 2, sampleWindow, sampleWindow).data;
+    
+    var [ r, g, b ] = [ 0, 0, 0 ];
+    const pixelCount = sampleWindow * sampleWindow;
+    for (let i = 0; i < pixelCount; i++) {
+        r += data[4 * i];
+        g += data[4 * i + 1];
+        b += data[4 * i + 2];
+    }
+    console.log(r / pixelCount, g / pixelCount, b / pixelCount);
+    return [ r / pixelCount, g / pixelCount, b / pixelCount ];
+}
 
-    // Update the plot div
-    plot.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-    plot.innerText = `L: ${lab[0].toFixed(2)}, a: ${lab[1].toFixed(2)}, b: ${lab[2].toFixed(2)}`;
-}, 1000);
+function plotPixel(labL, labA, labB, colorCode) {
+    const canvasCoordsMax = 44;
+    const abMax = 50;
+    const abToCanvasCoords = canvasCoordsMax / abMax;
+    centerPixel.style.cx = 50 + labA * abToCanvasCoords;
+    centerPixel.style.cy = 50 - labB * abToCanvasCoords;
+    centerPixel.style.fill = colorCode;
+}
+
+setInterval(() => {
+    const centerX = Math.floor(canvas.offsetWidth / 2);
+    const centerY = Math.floor(canvas.offsetHeight / 2);
+
+    // Update canvas using video feed
+    updateCanvas();
+
+    // Get center pixel and map to CIELab
+    const [ r, g, b ] = getPixel(centerX, centerY);
+    console.log(r, g, b);
+    const lab = chroma.rgb(r, g, b).lab();
+    const labL = lab[0];
+    const labA = lab[1];
+    const labB = lab[2];
+
+    // Update plot
+    plotPixel(labL, labA, labB, `RGB(${r},${g},${b})`);
+
+    console.log(`(${centerPixel.style.cx}, ${centerPixel.style.cx})`);
+
+    // console.log(`L: ${labL.toFixed(2)}, a: ${labA.toFixed(2)}, b: ${labB.toFixed(2)}`);
+}, 100);
+
+window.onresize = () => {
+    canvasWidth = canvas.offsetWidth;
+    canvasHeight = canvas.offsetHeight;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+}
