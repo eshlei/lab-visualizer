@@ -15,7 +15,9 @@ video.setAttribute('muted', '');
 video.setAttribute('playsinline', '')
 
 // Request camera access
-navigator.mediaDevices.getUserMedia({ video: true })
+navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: 'environment' } }
+    })
     .then(stream => {
         video.srcObject = stream;
         video.play();
