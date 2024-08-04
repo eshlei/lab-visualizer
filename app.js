@@ -70,6 +70,7 @@ function plotPixel(labL, labA, labB, colorCode) {
     centerPixel.style.cy = 50 - labB * abToCanvasCoords;
     centerPixel.style.fill = colorCode;
     alert(`(${labL}, ${labA}, ${labB})`);
+    alert(`(${centerPixel.style.cx}, ${centerPixel.style.cy})`);
 }
 
 setInterval(() => {
