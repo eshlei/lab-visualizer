@@ -10,10 +10,6 @@ var backgroundX = 0.95047; // D65 white point
 var backgroundY = 1.00000; // D65 white point
 var backgroundZ = 1.08883; // D65 white point
 
-video.setAttribute('autoplay', '');
-video.setAttribute('muted', '');
-video.setAttribute('playsinline', '')
-
 // Request camera access
 navigator.mediaDevices.getUserMedia({
         video: { facingMode: { exact: 'environment' } }
@@ -73,7 +69,7 @@ function plotPixel(labL, labA, labB, colorCode) {
     centerPixel.style.cx = 50 + labA * abToCanvasCoords;
     centerPixel.style.cy = 50 - labB * abToCanvasCoords;
     centerPixel.style.fill = colorCode;
-    alert(`(${centerPixel.style.cx}, ${centerPixel.style.cy})`);
+    alert(`(${labL}, ${labA}, ${labB})`);
 }
 
 setInterval(() => {
