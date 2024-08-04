@@ -4,6 +4,7 @@ const analysis = document.getElementById('analysis');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d', { willReadFrequently: true });
 const centerPixel = document.getElementById('center-pixel');
+const centerPixelText = document.getElementById('center-pixel-text');
 
 const sampleWindow = 10;
 var backgroundX = 0.95047; // D65 white point
@@ -66,11 +67,13 @@ function getPixel(x, y) {
 
 function plotPixel(labL, labA, labB, colorCode) {
     const canvasCoordsMax = 44;
-    const abMax = 100;
+    const abMax = 150;
     const abToCanvasCoords = canvasCoordsMax / abMax;
     centerPixel.setAttribute('cx', 50 + labA * abToCanvasCoords);
     centerPixel.setAttribute('cy', 50 - labB * abToCanvasCoords);
     centerPixel.setAttribute('fill', colorCode);
+
+    centerPixelText.innerText(`L:${labL}, a:${labA}, b:${labB}`);
 }
 
 setInterval(() => {
