@@ -11,7 +11,8 @@ var backgroundY = 1.00000; // D65 white point
 var backgroundZ = 1.08883; // D65 white point
 
 // Request camera access
-navigator.mediaDevices.getUserMedia({
+function startCamera() {
+    navigator.mediaDevices.getUserMedia({
         video: { facingMode: { exact: 'environment' } }
     })
     .then(stream => {
@@ -22,6 +23,7 @@ navigator.mediaDevices.getUserMedia({
         console.error('Error accessing the camera: ', err);
         alert('Error accessing the camera: ', err);
     });
+}
 
 // Update canvas with video feed
 function updateCanvas() {
@@ -93,6 +95,10 @@ analysis.addEventListener("click", () => {
 window.onresize = () => {
     location.reload();
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('click', startCamera, { once: true });
+});
 
 // Convert RGB to XYZ
 function rgbToXyz(r, g, b) {
