@@ -66,9 +66,9 @@ function plotPixel(labL, labA, labB, colorCode) {
     const canvasCoordsMax = 44;
     const abMax = 50;
     const abToCanvasCoords = canvasCoordsMax / abMax;
-    centerPixel.style.cx = 50 + labA * abToCanvasCoords;
-    centerPixel.style.cy = 50 - labB * abToCanvasCoords;
-    centerPixel.style.fill = colorCode;
+    centerPixel.setAttribute('cx', 50 + labA * abToCanvasCoords);
+    centerPixel.setAttribute('cy', 50 - labB * abToCanvasCoords);
+    centerPixel.setAttribute('fill', colorCode);
 }
 
 setInterval(() => {
