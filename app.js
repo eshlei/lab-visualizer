@@ -257,9 +257,11 @@ abPlot.addEventListener("click", () => {
     }
 });
 
+/*
 window.onresize = () => {
     location.reload();
 }
+*/
 
 document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', () => {
