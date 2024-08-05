@@ -1,15 +1,20 @@
 const video = document.getElementById('camera');
-
 const canvasWrapper = document.getElementById('canvas-wrapper');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d', { willReadFrequently: true });
-
 const analysis = document.getElementById('analysis');
+const lPlot = document.getElementById('l-plot');
+const centerPixelL = document.getElementById('center-pixel-l');
 const abPlot = document.getElementById('ab-plot');
-const centerPixelColor = document.getElementById('center-pixel-color');
+const centerPixelAb = document.getElementById('center-pixel-ab');
 const svgText = document.getElementById('svg-text');
-
 const captureButton = document.getElementById('capture-button');
+
+// Sample a 10x10 pixel area
+const sampleWidth = 10;
+// Take the average of the past 5 samples
+const recentSamplesLen = 5;
+var recentSamples = [];
 
 class StandardObserver {
     constructor(whiteX = 0.95047, whiteY = 1.00000, whiteZ = 1.08883) {
@@ -122,24 +127,17 @@ class StandardObserver {
         return lab;
     }
 }
-
-
 const envObserver = new StandardObserver();
 const d65Observer = new StandardObserver();
-const sampleWidth = 10; // Sample a 10x10 pixel area
-const recentSamplesLen = 5; // Take the average of the past 3 samples
-var recentSamples = [];
-var captures = [];
+
 
 // Update canvas with video feed
 function updateCanvas() {
-    // Remeasure canvas and video width
+    // Mease canvas and video dimensions
     const canvasWidth = canvas.offsetWidth;
     const canvasHeight = canvas.offsetHeight;
     const videoWidth = video.videoWidth;
     const videoHeight = video.videoHeight;
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
 
     // Update canvas
     var scale = Math.max(canvasWidth / videoWidth, canvasHeight / videoHeight);
@@ -172,12 +170,21 @@ function getPixel(x, y) {
     return {r: meanRgb.r, g: meanRgb.g, b: meanRgb.b };
 }
 
-// Convert to svg coords
-function labToSvgCoords(l, a, b) {
-    const canvasCoordsMax = 44;
+// Convert to l-plot coords
+function labToLPlot(l, a, b) {
+    const lPlotMin = 20;
+    const lPlotMax = 80;
+    const x = 5;
+    const y = lPlotMax - l / 100 * (lPlotMax - lPlotMin)
+    return { x, y };
+}
+
+// Convert to ab-plot coords
+function labToAbPlot(l, a, b) {
+    const abPlotMax = 44;
     const abMax = 100;
-    const x = 50 + a * canvasCoordsMax / abMax;
-    const y = 50 - b * canvasCoordsMax / abMax;
+    const x = 50 + a * abPlotMax / abMax;
+    const y = 50 - b * abPlotMax / abMax;
     return { x, y };
 }
 
@@ -185,12 +192,12 @@ setInterval(() => {
     // Update canvas using video feed
     updateCanvas();
 
-    // Get center pixel and map to CIELab
-    const rgb = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
-    const lab = envObserver.rgbToLab(rgb.r, rgb.g, rgb.b);
+    // Get center pixel and map to Lab
+    const envRgb = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
+    const envLab = envObserver.rgbToLab(envRgb.r, envRgb.g, envRgb.b);
 
     // Push to queue and calculate mean
-    recentSamples.push(lab);
+    recentSamples.push(envLab);
     if (recentSamples.length > recentSamplesLen) {
         recentSamples.shift();
     }
@@ -203,18 +210,60 @@ setInterval(() => {
     meanLab.l /= recentSamplesLen;
     meanLab.a /= recentSamplesLen;
     meanLab.b /= recentSamplesLen;
+    const meanRgb = d65Observer.labToRgb(meanLab.l, meanLab.a, meanLab.b);
+    
+    // Update l-plot
+    const lPlotCoords = labToLPlot(meanLab.l, meanLab.a, meanLab.b);
+    centerPixelL.setAttribute('y1', lPlotCoords.y);
+    centerPixelL.setAttribute('y2', lPlotCoords.y);
+    centerPixelL.setAttribute('stroke', `RGB(${meanRgb.r},${meanRgb.g},${meanRgb.b})`);
 
-    // Update plot
-    const svgCoords = labToSvgCoords(meanLab.l, meanLab.a, meanLab.b);
-    console.log(meanLab);
-    console.log(svgCoords);
-    const d65Rgb = d65Observer.labToRgb(meanLab.l, meanLab.a, meanLab.b);
-    centerPixelColor.setAttribute('cx', svgCoords.x);
-    centerPixelColor.setAttribute('cy', svgCoords.y);
-    centerPixelColor.setAttribute('fill', `RGB(${d65Rgb.r},${d65Rgb.g},${d65Rgb.b})`);
-    svgText.textContent = `L*:${Math.round(lab.l)}, a*:${Math.round(lab.a)}, b*:${Math.round(lab.b)}`;
+    // Update ab-plot
+    const AbPlotCoords = labToAbPlot(meanLab.l, meanLab.a, meanLab.b);
+    centerPixelAb.setAttribute('cx', AbPlotCoords.x);
+    centerPixelAb.setAttribute('cy', AbPlotCoords.y);
+    centerPixelAb.setAttribute('fill', `RGB(${meanRgb.r},${meanRgb.g},${meanRgb.b})`);
+    svgText.textContent = `L*:${Math.round(meanLab.l)}, a*:${Math.round(meanLab.a)}, b*:${Math.round(meanLab.b)}`;
 }, 100);
 
+// Capture color
+captureButton.addEventListener("click", () => {
+    const envRgb = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
+    const envLab = envObserver.rgbToLab(envRgb.r, envRgb.g, envRgb.b);
+    const d65Rgb = d65Observer.labToRgb(envLab.l, envLab.a, envLab.b);
+    const lPlotCoords = labToLPlot(envLab.l, envLab.a, envLab.b);
+    const abPlotCoords = labToAbPlot(envLab.l, envLab.a, envLab.b);
+
+    // Add new color to l-plot
+    const capturedColorL = document.createElementNS("http://www.w3.org/2000/svg", 'line');
+    capturedColorL.setAttribute('class', 'captured-color-l');
+    capturedColorL.setAttribute('x1', 7);
+    capturedColorL.setAttribute('y1', lPlotCoords.y);
+    capturedColorL.setAttribute('x2', 13);
+    capturedColorL.setAttribute('y2', lPlotCoords.y);
+    capturedColorL.setAttribute('stroke', `RGB(${d65Rgb.r},${d65Rgb.g},${d65Rgb.b})`);
+    capturedColorL.setAttribute('stroke-width', 1);
+    capturedColorL.setAttribute('stroke-linecap', 'round');
+    lPlot.insertBefore(capturedColorL, centerPixelL);
+
+    // Add new color to ab-plot
+    const capturedColorAb = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
+    capturedColorAb.setAttribute('class', 'captured-color-ab');
+    capturedColorAb.setAttribute('width', 10);
+    capturedColorAb.setAttribute('height', 1);
+    capturedColorAb.setAttribute('cx', abPlotCoords.x);
+    capturedColorAb.setAttribute('cy', abPlotCoords.y);
+    capturedColorAb.setAttribute('r', 1.5);
+    capturedColorAb.setAttribute('fill', `RGB(${d65Rgb.r},${d65Rgb.g},${d65Rgb.b})`);
+    abPlot.insertBefore(capturedColorAb, centerPixelAb);
+    
+    canvasWrapper.style.background = "#909090";
+    setTimeout(() => {
+        canvasWrapper.style.background = "#f0f0f0";
+    }, 250);
+});
+
+// Set reference white
 canvas.addEventListener("click", () => {
     const rgb = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
     const xyz = envObserver.rgbToXyz(rgb.r, rgb.g, rgb.b);
@@ -229,56 +278,45 @@ canvas.addEventListener("click", () => {
     }, 250);
 });
 
-captureButton.addEventListener("click", () => {
-    const envRgb = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
-    const envLab = envObserver.rgbToLab(envRgb.r, envRgb.g, envRgb.b);
-    const d65Rgb = d65Observer.labToRgb(envLab.l, envLab.a, envLab.b);
-    const svgCoords = labToSvgCoords(envLab.l, envLab.a, envLab.b);
-
-    // Add new color to svg
-    const capturedColor = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
-    capturedColor.setAttribute('class', 'captured-color');
-    capturedColor.setAttribute('cx', svgCoords.x);
-    capturedColor.setAttribute('cy', svgCoords.y);
-    capturedColor.setAttribute('r', 1.5);
-    capturedColor.setAttribute('fill', `RGB(${d65Rgb.r},${d65Rgb.g},${d65Rgb.b})`);
-    abPlot.appendChild(capturedColor);
-    
-    canvasWrapper.style.background = "#909090";
-    setTimeout(() => {
-        canvasWrapper.style.background = "#f0f0f0";
-    }, 250);
-});
-
+// Click blank to remove all captures
 abPlot.addEventListener("click", () => {
-    const capturedColors = document.getElementsByClassName("captured-color");
-    for (let idx in capturedColors) {
-        capturedColors[0].remove();
+    const capturedColorsL = document.getElementsByClassName("captured-color-l");
+    while (capturedColorsL.length) {
+        capturedColorsL[0].remove();
+    }
+    const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
+    while (capturedColorsAb.length) {
+        capturedColorsAb[0].remove();
     }
 });
 
-/*
-window.onresize = () => {
-    location.reload();
-}
-*/
+// window.onresize = () => {
+//     location.reload();
+// }
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.body.addEventListener('click', () => {
-        navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: 'environment'}}})
+function onload() {
+    // Request camera API
+    navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: 'environment'}}})
+    .then(stream => {
+        video.srcObject = stream;
+        video.play();
+    })
+    .catch(() => {
+        navigator.mediaDevices.getUserMedia({video: true})
         .then(stream => {
             video.srcObject = stream;
             video.play();
         })
-        .catch(() => {
-            navigator.mediaDevices.getUserMedia({video: true})
-            .then(stream => {
-                video.srcObject = stream;
-                video.play();
-            })
-        })
-        .catch(err => {
-            alert('Error accessing the camera: ', err);
-        })
-    }, { once: true });
+    })
+    .catch(err => {
+        alert('Error accessing the camera: ', err);
+    })
+    
+    // Set canvas size
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('click', onload, { once: true });
 });
