@@ -1,10 +1,15 @@
 const video = document.getElementById('camera');
-const canvasContainer = document.getElementById('canvas-container');
+
+const canvasWrapper = document.getElementById('canvas-wrapper');
 const canvas = document.getElementById('canvas');
-const analysis = document.getElementById('analysis');
 const context = canvas.getContext('2d', { willReadFrequently: true });
-const centerPixel = document.getElementById('center-pixel');
-const centerPixelText = document.getElementById('center-pixel-text');
+
+const analysis = document.getElementById('analysis');
+const abPlot = document.getElementById('ab-plot');
+const centerPixelColor = document.getElementById('center-pixel-color');
+const textLowerLeft = document.getElementById('text-lower-left');
+
+const captureButton = document.getElementById('capture-button');
 
 class StandardObserver {
     constructor(whiteX = 0.95047, whiteY = 1.00000, whiteZ = 1.08883) {
@@ -122,7 +127,7 @@ class StandardObserver {
 const envObserver = new StandardObserver();
 const d65Observer = new StandardObserver();
 const sampleWidth = 10; // Sample a 10x10 pixel area
-const recentSamplesLen = 10; // Take the average of the past 3 samples
+const recentSamplesLen = 5; // Take the average of the past 3 samples
 var recentSamples = [];
 var captures = [];
 
@@ -167,19 +172,13 @@ function getPixel(x, y) {
     return {r: meanRgb.r, g: meanRgb.g, b: meanRgb.b };
 }
 
-function plotPixel(lab) {
-
-    // Convert to D65 illumination
-    const rgb = d65Observer.labToRgb(lab.l, lab.a, lab.b);
-    
+// Convert to svg coords
+function labToSvgCoords(l, a, b) {
     const canvasCoordsMax = 44;
     const abMax = 100;
-    const abToCanvasCoords = canvasCoordsMax / abMax;
-    centerPixel.setAttribute('cx', 50 + lab.a * abToCanvasCoords);
-    centerPixel.setAttribute('cy', 50 - lab.b * abToCanvasCoords);
-    centerPixel.setAttribute('fill', `RGB(${rgb.r},${rgb.g},${rgb.b})`);
-
-    centerPixelText.textContent = `L:${Math.round(lab.l)}, a:${Math.round(lab.a)}, b:${Math.round(lab.b)}`;
+    const x = 50 + a * canvasCoordsMax / abMax;
+    const y = 50 - b * canvasCoordsMax / abMax;
+    return { x, y };
 }
 
 setInterval(() => {
@@ -206,20 +205,44 @@ setInterval(() => {
     meanLab.b /= recentSamplesLen;
 
     // Update plot
-    plotPixel(meanLab);
+    const svgCoords = labToSvgCoords(meanLab.l, meanLab.a, meanLab.b);
+    console.log(meanLab);
+    console.log(svgCoords);
+    const d65Rgb = d65Observer.labToRgb(meanLab.l, meanLab.a, meanLab.b);
+    centerPixelColor.setAttribute('cx', svgCoords.x);
+    centerPixelColor.setAttribute('cy', svgCoords.y);
+    centerPixelColor.setAttribute('fill', `RGB(${d65Rgb.r},${d65Rgb.g},${d65Rgb.b})`);
+    textLowerLeft.textContent = `L:${Math.round(lab.l)}, a:${Math.round(lab.a)}, b:${Math.round(lab.b)}`;
 }, 100);
 
 canvas.addEventListener("click", () => {
-    // Set reference white
     const rgb = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
     const xyz = envObserver.rgbToXyz(rgb.r, rgb.g, rgb.b);
+    
+    // Set reference white
     envObserver.setReferenceWhite(xyz.x, xyz.y, xyz.z);
 
     // Visual cues for reference white reset
-    canvasContainer.style.background = "#909090";
+    canvasWrapper.style.background = "#909090";
     setTimeout(() => {
-        canvasContainer.style.background = "#f0f0f0";
+        canvasWrapper.style.background = "#f0f0f0";
       }, 250);
+})
+
+captureButton.addEventListener("click", () => {
+    const envRgb = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
+    const envLab = envObserver.rgbToLab(envRgb.r, envRgb.g, envRgb.b);
+    const d65Rgb = d65Observer.labToRgb(envLab.l, envLab.a, envLab.b);
+    const svgCoords = labToSvgCoords(envLab.l, envLab.a, envLab.b);
+
+    // Add new color to svg
+    const capturedColor = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
+    capturedColor.setAttribute('class', 'captured-color');
+    capturedColor.setAttribute('cx', svgCoords.x);
+    capturedColor.setAttribute('cy', svgCoords.y);
+    capturedColor.setAttribute('r', 1);
+    capturedColor.setAttribute('fill', `RGB(${d65Rgb.r},${d65Rgb.g},${d65Rgb.b})`);
+    abPlot.appendChild(capturedColor);
 })
 
 window.onresize = () => {
@@ -227,7 +250,7 @@ window.onresize = () => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.body.addEventListener('click', () => {
+    captureButton.addEventListener('click', () => {
         navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: 'environment'}}})
         .then(stream => {
             video.srcObject = stream;
