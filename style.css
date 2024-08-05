@@ -2,6 +2,12 @@ body {
   width: 100vw;
   height: 100vh;
   margin: 0;
+  overflow-y: hidden;
+  overflow-x: hidden; 
+}
+
+video {
+  display: none;
 }
 
 div {
@@ -15,7 +21,7 @@ div {
   flex-direction: column;
 }
 
-.canvas-container {
+.canvas-wrapper {
   flex: 1;
   display: flex;
   padding: 5px;
@@ -27,10 +33,55 @@ div {
   border-radius: 5px;
 }
 
-.analysis-container {
+.analysis-wrapper {
   aspect-ratio: 1/1;
+  display: flex;
+  flex-direction: column;
 }
 
-#camera {
-  display: none;
+.plot {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+
+.l-plot-wrapper {
+  width: 40px;
+}
+
+.ab-plot-wrapper {
+  flex: 1;
+}
+
+.ab-plot {
+  width: 100%;
+  height: 100%;
+}
+
+.ab-plot-slider-wrapper {
+  width: 40px;
+}
+
+.capture-wrapper {
+  height: 80px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.capture-button-ring {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid #a0a0a0;
+}
+
+button {
+  width: 50px;
+  height: 50px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 0px;
+  padding: 0px;
+  background-color: #a0a0a0;
 }

@@ -1,7 +1,7 @@
 const video = document.getElementById('camera');
 const canvasContainer = document.getElementById('canvas-container');
-const analysis = document.getElementById('analysis');
 const canvas = document.getElementById('canvas');
+const analysis = document.getElementById('analysis');
 const context = canvas.getContext('2d', { willReadFrequently: true });
 const centerPixel = document.getElementById('center-pixel');
 const centerPixelText = document.getElementById('center-pixel-text');
@@ -124,6 +124,7 @@ const d65Observer = new StandardObserver();
 const sampleWidth = 10; // Sample a 10x10 pixel area
 const recentSamplesLen = 10; // Take the average of the past 3 samples
 var recentSamples = [];
+var captures = [];
 
 // Update canvas with video feed
 function updateCanvas() {
@@ -208,7 +209,7 @@ setInterval(() => {
     plotPixel(meanLab);
 }, 100);
 
-analysis.addEventListener("click", () => {
+canvas.addEventListener("click", () => {
     // Set reference white
     const rgb = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
     const xyz = envObserver.rgbToXyz(rgb.r, rgb.g, rgb.b);
