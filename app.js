@@ -9,6 +9,8 @@ const abPlot = document.getElementById('ab-plot');
 const centerPixelAb = document.getElementById('center-pixel-ab');
 const svgText = document.getElementById('svg-text');
 const captureButton = document.getElementById('capture-button');
+const overlayBackground = document.getElementById('overlay-background');
+const overlayOption = document.getElementById('overlay-option');
 
 // Sample a 10x10 pixel area
 const sampleWidth = 10;
@@ -290,33 +292,31 @@ abPlot.addEventListener("click", () => {
     }
 });
 
-// window.onresize = () => {
-//     location.reload();
-// }
 
-function onload() {
-    // Request camera API
-    navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: 'environment'}}})
-    .then(stream => {
-        video.srcObject = stream;
-        video.play();
-    })
-    .catch(() => {
-        navigator.mediaDevices.getUserMedia({video: true})
+document.addEventListener('DOMContentLoaded', () => {
+    overlayOption.addEventListener('click', () => {
+        // Request camera access
+        navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: 'environment'}}})
         .then(stream => {
             video.srcObject = stream;
             video.play();
         })
-    })
-    .catch(err => {
-        alert('Error accessing the camera: ', err);
-    })
-    
-    // Set canvas size
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-}
+        .catch(() => {
+            navigator.mediaDevices.getUserMedia({video: true})
+            .then(stream => {
+                video.srcObject = stream;
+                video.play();
+            })
+        })
+        .catch(err => {
+            alert('Error accessing the camera: ', err);
+        })
+        
+        // Set canvas size
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.body.addEventListener('click', onload, { once: true });
+        // Hide overlay
+        overlayBackground.style.display = 'none';
+    }, { once: true });
 });

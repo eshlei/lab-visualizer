@@ -42,11 +42,11 @@ div {
 .plot {
   display: flex;
   flex-direction: row;
-  flex: 1;
+  flex: 5;
 }
 
 .l-plot-wrapper {
-  width: 40px;
+  flex: 1;
 }
 
 .l-plot {
@@ -55,7 +55,7 @@ div {
 }
 
 .ab-plot-wrapper {
-  flex: 1;
+  flex: 5;
 }
 
 .ab-plot {
@@ -64,11 +64,11 @@ div {
 }
 
 .ab-plot-slider-wrapper {
-  width: 40px;
+  flex: 1;
 }
 
 .capture-wrapper {
-  height: 80px;
+  flex: 2;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -89,4 +89,48 @@ button {
   border: 0px;
   padding: 0px;
   background-color: #a0a0a0;
+}
+
+.overlay-background {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(127,127,127,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay {
+  background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.overlay-title {
+  margin: 30px;
+  font-weight: lighter;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.overlay-option {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: navy;
+  border-top-style: solid;
+  border-color: #a0a0a0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  cursor: pointer;
+  font-weight: lighter;
+  font-family: Arial, Helvetica, sans-serif;
 }
