@@ -223,7 +223,7 @@ setInterval(() => {
     centerPixelAb.setAttribute('cx', AbPlotCoords.x);
     centerPixelAb.setAttribute('cy', AbPlotCoords.y);
     centerPixelAb.setAttribute('fill', `RGB(${meanRgb.r},${meanRgb.g},${meanRgb.b})`);
-    svgText.textContent = `L*:${Math.round(meanLab.l)}, a*:${Math.round(meanLab.a)}, b*:${Math.round(meanLab.b)}`;
+    // svgText.textContent = `L*:${Math.round(meanLab.l)}, a*:${Math.round(meanLab.a)}, b*:${Math.round(meanLab.b)}`;
 }, 100);
 
 // Capture color
@@ -242,7 +242,7 @@ captureButton.addEventListener("click", () => {
     capturedColorL.setAttribute('x2', 13);
     capturedColorL.setAttribute('y2', lPlotCoords.y);
     capturedColorL.setAttribute('stroke', `RGB(${d65Rgb.r},${d65Rgb.g},${d65Rgb.b})`);
-    capturedColorL.setAttribute('stroke-width', 1);
+    capturedColorL.setAttribute('stroke-width', 1.5);
     capturedColorL.setAttribute('stroke-linecap', 'round');
     lPlot.insertBefore(capturedColorL, centerPixelL);
 

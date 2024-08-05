@@ -18,31 +18,45 @@
             <div class="plot">
                 <div class="l-plot-wrapper">
                     <svg class="l-plot" id="l-plot" viewbox="0 0 20 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- l-axis -->
                         <line x1="10" y1="20" x2="10" y2="80" stroke="#c0c0c0" stroke-width="0.5" stroke-linecap="round"></line>
-                        <line id="center-pixel-l" x1="7" y1="80" x2="13" y2="80" stroke="none" stroke-width="1" stroke-linecap="round"></rect>
+                        <line x1="8" y1="20" x2="12" y2="20" stroke="#c0c0c0" stroke-width="0.2" stroke-linecap="round"></line>
+                        <line x1="8" y1="35" x2="12" y2="35" stroke="#c0c0c0" stroke-width="0.2" stroke-linecap="round"></line>
+                        <line x1="8" y1="50" x2="12" y2="50" stroke="#c0c0c0" stroke-width="0.2" stroke-linecap="round"></line>
+                        <line x1="8" y1="65" x2="12" y2="65" stroke="#c0c0c0" stroke-width="0.2" stroke-linecap="round"></line>
+                        <line x1="8" y1="80" x2="12" y2="80" stroke="#c0c0c0" stroke-width="0.2" stroke-linecap="round"></line>
+                        <text x="14" y="21" fill="#c0c0c0" font-size="3" font-family="Sans,Arial" display="none">100</text>
+                        <text x="14" y="36" fill="#c0c0c0" font-size="3" font-family="Sans,Arial" display="none">75</text>
+                        <text x="14" y="51" fill="#c0c0c0" font-size="3" font-family="Sans,Arial" display="none">50</text>
+                        <text x="14" y="66" fill="#c0c0c0" font-size="3" font-family="Sans,Arial" display="none">25</text>
+                        <text x="14" y="81" fill="#c0c0c0" font-size="3" font-family="Sans,Arial" display="none">0</text>
+                        <!-- center pixel -->
+                        <line id="center-pixel-l" x1="6" y1="80" x2="14" y2="80" stroke="none" stroke-width="1.5" stroke-linecap="round"></line>
+                        <!-- captured colors -->
                     </svg>
                 </div>
                 <div class="ab-plot-wrapper">
                     <svg class="ab-plot" id="ab-plot" viewbox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- a*-axis -->
+                        <!-- a-axis -->
                         <line x1="2" y1="50" x2="98" y2="50" stroke="#c0c0c0" stroke-width="0.4" stroke-linecap="round"></line>
                         <line x1="98" y1="50" x2="96.5" y2="48.5" stroke="#c0c0c0" stroke-width="0.4" stroke-linecap="round"></line>
                         <line x1="98" y1="50" x2="96.5" y2="51.5" stroke="#c0c0c0" stroke-width="0.4" stroke-linecap="round"></line>
                         <text x="95.5" y="47.5" fill="#c0c0c0" font-size="4" font-family="Sans,Arial">a*</text>
-                        <!-- b*-axis -->
+                        <!-- b-axis -->
                         <line x1="50" y1="2" x2="50" y2="98" stroke="#c0c0c0" stroke-width="0.4" stroke-linecap="round"></line>
                         <line x1="50" y1="2" x2="48.5" y2="3.5" stroke="#c0c0c0" stroke-width="0.4" stroke-linecap="round"></line>
                         <line x1="50" y1="2" x2="51.5" y2="3.5" stroke="#c0c0c0" stroke-width="0.4" stroke-linecap="round"></line>
                         <text x="44.5" y="4" fill="#c0c0c0" font-size="4" font-family="Sans,Arial">b*</text>
                         <!-- circles -->
-                        <circle cx="50" cy="50" r="11" stroke="#d0d0d0" stroke-width="0.1" fill="none"></circle>
-                        <circle cx="50" cy="50" r="22" stroke="#d0d0d0" stroke-width="0.1" fill="none"></circle>
-                        <circle cx="50" cy="50" r="33" stroke="#d0d0d0" stroke-width="0.1" fill="none"></circle>
-                        <circle cx="50" cy="50" r="44" stroke="#d0d0d0" stroke-width="0.1" fill="none"></circle>
+                        <circle cx="50" cy="50" r="11" stroke="#d0d0d0" stroke-width="0.2" fill="none"></circle>
+                        <circle cx="50" cy="50" r="22" stroke="#d0d0d0" stroke-width="0.2" fill="none"></circle>
+                        <circle cx="50" cy="50" r="33" stroke="#d0d0d0" stroke-width="0.2" fill="none"></circle>
+                        <circle cx="50" cy="50" r="44" stroke="#d0d0d0" stroke-width="0.2" fill="none"></circle>
                         <!-- text -->
-                        <text id="svg-text" x="2" y="4" fill="#a0a0a0" font-size="4" font-family="Sans,Arial">L:? a:? b: ?</text>
+                        <text id="svg-text" x="2" y="4" fill="#a0a0a0" font-size="4" font-family="Sans,Arial"></text>
                         <!-- center pixel -->
                         <circle id="center-pixel-ab" cx="50" cy="50" r="2" fill="none"></circle>
+                        <!-- captured colors -->
                         </svg>
                 </div>
                 <div class="ab-plot-slider-wrapper"></div>
