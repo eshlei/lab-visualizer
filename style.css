@@ -128,6 +128,7 @@ button {
   color: navy;
   border-top-style: solid;
   border-color: #a0a0a0;
+  border-width: 1px;
   padding-top: 10px;
   padding-bottom: 10px;
   cursor: pointer;
