@@ -24,7 +24,7 @@ div {
 .canvas-wrapper {
   flex: 1;
   display: flex;
-  padding: 5px;
+  padding: 10px;
 }
 
 #canvas {

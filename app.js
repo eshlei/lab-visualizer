@@ -7,7 +7,7 @@ const context = canvas.getContext('2d', { willReadFrequently: true });
 const analysis = document.getElementById('analysis');
 const abPlot = document.getElementById('ab-plot');
 const centerPixelColor = document.getElementById('center-pixel-color');
-const textLowerLeft = document.getElementById('text-lower-left');
+const svgText = document.getElementById('svg-text');
 
 const captureButton = document.getElementById('capture-button');
 
@@ -212,7 +212,7 @@ setInterval(() => {
     centerPixelColor.setAttribute('cx', svgCoords.x);
     centerPixelColor.setAttribute('cy', svgCoords.y);
     centerPixelColor.setAttribute('fill', `RGB(${d65Rgb.r},${d65Rgb.g},${d65Rgb.b})`);
-    textLowerLeft.textContent = `L:${Math.round(lab.l)}, a:${Math.round(lab.a)}, b:${Math.round(lab.b)}`;
+    svgText.textContent = `L*:${Math.round(lab.l)}, a*:${Math.round(lab.a)}, b*:${Math.round(lab.b)}`;
 }, 100);
 
 canvas.addEventListener("click", () => {
@@ -226,8 +226,8 @@ canvas.addEventListener("click", () => {
     canvasWrapper.style.background = "#909090";
     setTimeout(() => {
         canvasWrapper.style.background = "#f0f0f0";
-      }, 250);
-})
+    }, 250);
+});
 
 captureButton.addEventListener("click", () => {
     const envRgb = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
@@ -240,17 +240,29 @@ captureButton.addEventListener("click", () => {
     capturedColor.setAttribute('class', 'captured-color');
     capturedColor.setAttribute('cx', svgCoords.x);
     capturedColor.setAttribute('cy', svgCoords.y);
-    capturedColor.setAttribute('r', 1);
+    capturedColor.setAttribute('r', 1.5);
     capturedColor.setAttribute('fill', `RGB(${d65Rgb.r},${d65Rgb.g},${d65Rgb.b})`);
     abPlot.appendChild(capturedColor);
-})
+    
+    canvasWrapper.style.background = "#909090";
+    setTimeout(() => {
+        canvasWrapper.style.background = "#f0f0f0";
+    }, 250);
+});
+
+abPlot.addEventListener("click", () => {
+    const capturedColors = document.getElementsByClassName("captured-color");
+    for (let idx in capturedColors) {
+        capturedColors[0].remove();
+    }
+});
 
 window.onresize = () => {
     location.reload();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    captureButton.addEventListener('click', () => {
+    document.body.addEventListener('click', () => {
         navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: 'environment'}}})
         .then(stream => {
             video.srcObject = stream;
