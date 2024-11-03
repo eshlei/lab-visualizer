@@ -15,11 +15,13 @@ const captureButton = document.getElementById('capture-button');
 const overlayBackground = document.getElementById('overlay-background');
 const overlayOption = document.getElementById('overlay-option');
 
-// Sample a 10x10 pixel area
 const sampleWidth = 10;
-// Take the average of the past 5 samples
 const recentSamplesLen = 5;
 var recentSamples = [];
+
+const abPlotRad = 44;
+const lPlotMin = 20;
+const lPlotMax = 80;
 
 class StandardObserver {
     constructor(whiteX = 0.95047, whiteY = 1.00000, whiteZ = 1.08883) {
@@ -180,8 +182,6 @@ function getPixel(x, y) {
 
 // Convert to l-plot coords
 function labToLPlot(l, a, b) {
-    const lPlotMin = 20;
-    const lPlotMax = 80;
     const x = 5;
     const y = lPlotMax - l / 100 * (lPlotMax - lPlotMin)
     return { x, y };
@@ -189,10 +189,8 @@ function labToLPlot(l, a, b) {
 
 // Convert to ab-plot coords
 function labToAbPlot(l, a, b) {
-    const abPlotMax = 44;
-    const abMax = 100;
-    const x = 50 + a * abPlotMax / abMax;
-    const y = 50 - b * abPlotMax / abMax;
+    const x = 50 + a / 100 * abPlotRad;
+    const y = 50 - b / 100 * abPlotRad;
     return { x, y };
 }
 
@@ -277,43 +275,94 @@ captureButton.addEventListener("click", () => {
 });
 
 
-// Filter by lightness
-function mousemove (e) {
+// Filter by lightness or hue
+function filterByLightness (e) {
     e.preventDefault();
     e.stopPropagation();
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
     const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
-    let bounds = lPlot.getBoundingClientRect();
-    let lightness = (e.clientY - bounds.top) / (bounds.bottom - bounds.top) * 100;
-    if (e.touches) {
-        lightness = (e.touches[0].clientY - bounds.top) / (bounds.bottom - bounds.top) * 100;
-    }
+    let lBounds = lPlot.getBoundingClientRect();
+    let mouseY = e.touches ? e.touches[0].clientY : e.clientY;
+    mouseY = (mouseY - lBounds.top) / (lBounds.bottom - lBounds.top) * 100;
     for (let i = 0; i < capturedColorsL.length; i++) {
-        if (parseFloat(capturedColorsL[i].getAttribute('y1')) > lightness) {
-            capturedColorsL[i].style.display = 'none';
-            capturedColorsAb[i].style.display = 'none';
-        } else {
+        let capturedY = parseFloat(capturedColorsL[i].getAttribute('y1'));
+        if (capturedY < mouseY) {
             capturedColorsL[i].style.display = null;
             capturedColorsAb[i].style.display = null;
+        } else {
+            capturedColorsL[i].style.display = 'none';
+            capturedColorsAb[i].style.display = 'none';
         }
     }
 }
-function mouseleave(e) {
+function filterByHue (e) {
+    e.preventDefault();
+    e.stopPropagation();
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
     const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
+    let abBounds = abPlot.getBoundingClientRect();
+    let mouseX = e.touches ? e.touches[0].clientX : e.clientX;
+    let mouseY = e.touches ? e.touches[0].clientY : e.clientY;
+    mouseX = (mouseX - abBounds.left) / (abBounds.right - abBounds.left) * 100;
+    mouseY = (mouseY - abBounds.top) / (abBounds.bottom - abBounds.top) * 100;
+    let mouseA = (mouseX - 50) / abPlotRad * 100;
+    let mouseB = (50 - mouseY) / abPlotRad * 100;
+    let mouseHue = Math.atan2(mouseB, mouseA);
+    let mouseChroma = Math.sqrt(mouseA ** 2 + mouseB ** 2);
+    // console.log(mouseX, mouseY, mouseHue);
+    let hueFilterWindow = Math.PI / 12;
+    hueFilterWindow = hueFilterWindow - 0.5 * hueFilterWindow * (mouseChroma / 100) ** 2;
+    console.log(mouseChroma, Math.PI / hueFilterWindow);
+    for (let i = 0; i < capturedColorsL.length; i++) {
+        let capturedX = parseFloat(capturedColorsAb[i].getAttribute('cx'));
+        let capturedY = parseFloat(capturedColorsAb[i].getAttribute('cy'));
+        let capturedHue = Math.atan2(50 - capturedY, capturedX - 50);
+        // console.log('capturedHue '+capturedHue);
+        if ((mouseHue - hueFilterWindow <= capturedHue && capturedHue <= mouseHue + hueFilterWindow)
+            || (mouseHue - hueFilterWindow <= capturedHue + 2 * Math.PI && capturedHue + 2 * Math.PI <= mouseHue + hueFilterWindow)
+            || (mouseHue - hueFilterWindow + 2 * Math.PI <= capturedHue && capturedHue <= mouseHue + hueFilterWindow + 2 * Math.PI)) {
+            capturedColorsL[i].style.display = null;
+        } else {
+            capturedColorsL[i].style.display = 'none';
+        }
+    }
+    const filterWindowAb = document.getElementById("filter-window-ab");
+    let arcRx = abPlotRad + 1.5;
+    let arcRy = abPlotRad + 1.5;
+    let arcX1 = 50 + Math.cos(mouseHue - hueFilterWindow) * arcRx;
+    let arcY1 = 50 - Math.sin(mouseHue - hueFilterWindow) * arcRy;
+    let arcX2 = 50 + Math.cos(mouseHue + hueFilterWindow) * arcRx;
+    let arcY2 = 50 - Math.sin(mouseHue + hueFilterWindow) * arcRy;
+    filterWindowAb.setAttribute('d', `M 50 50 ${arcX1} ${arcY1} A ${arcRx} ${arcRy} 0 0 0 ${arcX2} ${arcY2} M 50 50 Z`);
+    filterWindowAb.style.display = null;
+    // console.log(`M 50 50 ${arcX1} ${arcY1} A ${arcRx} ${arcRy} 0 0 0 ${arcX2} ${arcY2} M 50 50 Z`);
+}
+function filterReset(e) {
+    const capturedColorsL = document.getElementsByClassName("captured-color-l");
+    const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
+    const filterWindowAb = document.getElementById("filter-window-ab");
     for (let i = 0; i < capturedColorsL.length; i++) {
         capturedColorsL[i].style.display = null;
         capturedColorsAb[i].style.display = null;
     }
+    filterWindowAb.style.display = 'none';
 }
-lPlot.addEventListener("mousestart", mousemove);
-lPlot.addEventListener("mousemove", mousemove);
-lPlot.addEventListener("mouseleave", mouseleave);
-lPlot.addEventListener("touchcancel", mouseleave);
-lPlot.addEventListener("touchstart", mousemove);
-lPlot.addEventListener("touchmove", mousemove);
-lPlot.addEventListener("touchend", mouseleave);
-lPlot.addEventListener("touchcancel", mouseleave);
+lPlot.addEventListener("mousestart", filterByLightness);
+lPlot.addEventListener("mousemove", filterByLightness);
+lPlot.addEventListener("mouseleave", filterReset);
+lPlot.addEventListener("touchcancel", filterReset);
+lPlot.addEventListener("touchstart", filterByLightness);
+lPlot.addEventListener("touchmove", filterByLightness);
+lPlot.addEventListener("touchend", filterReset);
+lPlot.addEventListener("touchcancel", filterReset);
+abPlot.addEventListener("mousestart", filterByHue);
+abPlot.addEventListener("mousemove", filterByHue);
+abPlot.addEventListener("mouseleave", filterReset);
+abPlot.addEventListener("touchcancel", filterReset);
+abPlot.addEventListener("touchstart", filterByHue);
+abPlot.addEventListener("touchmove", filterByHue);
+abPlot.addEventListener("touchend", filterReset);
+abPlot.addEventListener("touchcancel", filterReset);
 
 
 // Set reference white
