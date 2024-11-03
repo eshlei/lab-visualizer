@@ -223,15 +223,15 @@ setInterval(() => {
     centerPixelL.setAttribute('y1', lPlotCoords.y);
     centerPixelL.setAttribute('y2', lPlotCoords.y);
     centerPixelL.setAttribute('stroke', `RGB(${meanRgb.r},${meanRgb.g},${meanRgb.b})`);
-    svgTextL.textContent = Math.round(meanLab.l);
+    svgTextL.textContent = '\u00A0'.repeat(2 - `${Math.round(meanLab.l)}`.length) + Math.round(meanLab.l);
 
     // Update ab-plot
     const AbPlotCoords = labToAbPlot(meanLab.l, meanLab.a, meanLab.b);
     centerPixelAb.setAttribute('cx', AbPlotCoords.x);
     centerPixelAb.setAttribute('cy', AbPlotCoords.y);
     centerPixelAb.setAttribute('fill', `RGB(${meanRgb.r},${meanRgb.g},${meanRgb.b})`);
-    svgTextA.textContent = Math.round(meanLab.a);
-    svgTextB.textContent = Math.round(meanLab.b);
+    svgTextA.textContent = '\u00A0'.repeat(3 - `${Math.round(meanLab.a)}`.length) + Math.round(meanLab.a);
+    svgTextB.textContent = '\u00A0'.repeat(3 - `${Math.round(meanLab.b)}`.length) + Math.round(meanLab.b);
     // svgText.textContent = `L*:${Math.round(meanLab.l)}, a*:${Math.round(meanLab.a)}, b*:${Math.round(meanLab.b)}`;
 }, 100);
 
