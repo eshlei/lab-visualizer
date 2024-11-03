@@ -278,7 +278,7 @@ captureButton.addEventListener("click", () => {
 
 
 // Filter by lightness
-lPlot.addEventListener("mousemove", (e) => {
+function mousemove (e) {
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
     const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
     let bounds = lPlot.getBoundingClientRect();
@@ -292,15 +292,20 @@ lPlot.addEventListener("mousemove", (e) => {
             capturedColorsAb[i].style.display = null;
         }
     }
-});
-lPlot.addEventListener("mouseleave", (e) => {
+}
+function mouseleave(e) {
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
     const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
     for (let i = 0; i < capturedColorsL.length; i++) {
         capturedColorsL[i].style.display = null;
         capturedColorsAb[i].style.display = null;
     }
-});
+}
+lPlot.addEventListener("mousemove", mousemove);
+lPlot.addEventListener("mouseleave", mouseleave);
+lPlot.addEventListener("touchmove", mousemove);
+lPlot.addEventListener("touchleave", mouseleave);
+
 
 // Set reference white
 canvas.addEventListener("click", () => {
