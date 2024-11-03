@@ -309,15 +309,17 @@ function filterByHue (e) {
     let mouseB = (50 - mouseY) / abPlotRad * 100;
     let mouseHue = Math.atan2(mouseB, mouseA);
     let mouseChroma = Math.sqrt(mouseA ** 2 + mouseB ** 2);
-    // console.log(mouseX, mouseY, mouseHue);
     let hueFilterWindow = Math.PI / 12;
-    hueFilterWindow = hueFilterWindow - 0.5 * hueFilterWindow * (mouseChroma / 100) ** 2;
-    console.log(mouseChroma, Math.PI / hueFilterWindow);
+    if (mouseChroma >= 87.5 && mouseChroma < 112.5) {
+        hueFilterWindow = hueFilterWindow - 0.5 * hueFilterWindow * ((mouseChroma - 87.5) / 100 * 4) ** 2;
+    } else if (mouseChroma >= 112.5) {
+        hueFilterWindow = Math.max(0, -hueFilterWindow * 4 * (mouseChroma / 112.5 - 1) + hueFilterWindow / 2);
+    }
+    // console.log(mouseChroma, Math.PI / hueFilterWindow);
     for (let i = 0; i < capturedColorsL.length; i++) {
         let capturedX = parseFloat(capturedColorsAb[i].getAttribute('cx'));
         let capturedY = parseFloat(capturedColorsAb[i].getAttribute('cy'));
         let capturedHue = Math.atan2(50 - capturedY, capturedX - 50);
-        // console.log('capturedHue '+capturedHue);
         if ((mouseHue - hueFilterWindow <= capturedHue && capturedHue <= mouseHue + hueFilterWindow)
             || (mouseHue - hueFilterWindow <= capturedHue + 2 * Math.PI && capturedHue + 2 * Math.PI <= mouseHue + hueFilterWindow)
             || (mouseHue - hueFilterWindow + 2 * Math.PI <= capturedHue && capturedHue <= mouseHue + hueFilterWindow + 2 * Math.PI)) {
@@ -335,7 +337,6 @@ function filterByHue (e) {
     let arcY2 = 50 - Math.sin(mouseHue + hueFilterWindow) * arcRy;
     filterWindowAb.setAttribute('d', `M 50 50 ${arcX1} ${arcY1} A ${arcRx} ${arcRy} 0 0 0 ${arcX2} ${arcY2} M 50 50 Z`);
     filterWindowAb.style.display = null;
-    // console.log(`M 50 50 ${arcX1} ${arcY1} A ${arcRx} ${arcRy} 0 0 0 ${arcX2} ${arcY2} M 50 50 Z`);
 }
 function filterReset(e) {
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
