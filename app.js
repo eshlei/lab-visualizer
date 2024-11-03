@@ -279,6 +279,8 @@ captureButton.addEventListener("click", () => {
 
 // Filter by lightness
 function mousemove (e) {
+    e.preventDefault();
+    e.stopPropagation();
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
     const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
     let bounds = lPlot.getBoundingClientRect();
@@ -301,8 +303,10 @@ function mouseleave(e) {
         capturedColorsAb[i].style.display = null;
     }
 }
+lPlot.addEventListener("mousestart", mousemove);
 lPlot.addEventListener("mousemove", mousemove);
 lPlot.addEventListener("mouseleave", mouseleave);
+lPlot.addEventListener("touchstart", mousemove);
 lPlot.addEventListener("touchmove", mousemove);
 lPlot.addEventListener("touchleave", mouseleave);
 
