@@ -47,7 +47,17 @@ class StandardObserver {
         const y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
         const z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
     
-        return { x, y, z };
+        // Scale XYZ values to custom reference white
+        const d65WhiteX = 0.95047;
+        const d65WhiteY = 1.00000;
+        const d65WhiteZ = 1.08883;
+
+        // Adjusted XYZ values based on custom white
+        return {
+            x: (x / d65WhiteX) * this.whiteX,
+            y: (y / d65WhiteY) * this.whiteY,
+            z: (z / d65WhiteZ) * this.whiteZ
+        };
     }
 
     xyzToLab(x, y, z) {
