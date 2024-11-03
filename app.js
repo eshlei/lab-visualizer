@@ -80,7 +80,16 @@ class StandardObserver {
     }
 
     xyzToRgb(x, y, z) {
+        // Scale XYZ values to custom reference white
+        const d65WhiteX = 0.95047;
+        const d65WhiteY = 1.00000;
+        const d65WhiteZ = 1.08883;
 
+        // Adjusted XYZ values based on custom white
+        x = x / this.white * d65WhiteX;
+        y = y / this.white * d65WhiteY;
+        z = z / this.white * d65WhiteZ;
+        
         // Convert XYZ to linear RGB
         let r = x * 3.2406 + y * -1.5372 + z * -0.4986;
         let g = x * -0.9689 + y * 1.8758 + z * 0.0415;
@@ -119,7 +128,7 @@ class StandardObserver {
         let xr = x3 > 0.008856 ? x3 : (x - 16 / 116) / 7.787;
         let yr = y3 > 0.008856 ? y3 : (y - 16 / 116) / 7.787;
         let zr = z3 > 0.008856 ? z3 : (z - 16 / 116) / 7.787;
-
+        
         xr *= this.whiteX;
         yr *= this.whiteY;
         zr *= this.whiteZ;
