@@ -8,6 +8,9 @@ const centerPixelL = document.getElementById('center-pixel-l');
 const abPlot = document.getElementById('ab-plot');
 const centerPixelAb = document.getElementById('center-pixel-ab');
 const svgText = document.getElementById('svg-text');
+const svgTextL = document.getElementById('svg-text-l');
+const svgTextA = document.getElementById('svg-text-a');
+const svgTextB = document.getElementById('svg-text-b');
 const captureButton = document.getElementById('capture-button');
 const overlayBackground = document.getElementById('overlay-background');
 const overlayOption = document.getElementById('overlay-option');
@@ -222,13 +225,16 @@ setInterval(() => {
     centerPixelL.setAttribute('y1', lPlotCoords.y);
     centerPixelL.setAttribute('y2', lPlotCoords.y);
     centerPixelL.setAttribute('stroke', `RGB(${meanRgb.r},${meanRgb.g},${meanRgb.b})`);
+    svgTextL.textContent = Math.round(meanLab.l);
 
     // Update ab-plot
     const AbPlotCoords = labToAbPlot(meanLab.l, meanLab.a, meanLab.b);
     centerPixelAb.setAttribute('cx', AbPlotCoords.x);
     centerPixelAb.setAttribute('cy', AbPlotCoords.y);
     centerPixelAb.setAttribute('fill', `RGB(${meanRgb.r},${meanRgb.g},${meanRgb.b})`);
-    svgText.textContent = `L*:${Math.round(meanLab.l)}, a*:${Math.round(meanLab.a)}, b*:${Math.round(meanLab.b)}`;
+    svgTextA.textContent = Math.round(meanLab.a);
+    svgTextB.textContent = Math.round(meanLab.b);
+    // svgText.textContent = `L*:${Math.round(meanLab.l)}, a*:${Math.round(meanLab.a)}, b*:${Math.round(meanLab.b)}`;
 }, 100);
 
 // Capture color
@@ -239,7 +245,7 @@ captureButton.addEventListener("click", () => {
     const lPlotCoords = labToLPlot(envLab.l, envLab.a, envLab.b);
     const abPlotCoords = labToAbPlot(envLab.l, envLab.a, envLab.b);
 
-    console.log(`(${Math.round(envRgb.r)}, ${Math.round(envRgb.g)}, ${Math.round(envRgb.b)}), (${Math.round(envLab.l)}, ${Math.round(envLab.a)}, ${Math.round(envLab.b)})`);
+    // console.log(`(${Math.round(envRgb.r)}, ${Math.round(envRgb.g)}, ${Math.round(envRgb.b)}), (${Math.round(envLab.l)}, ${Math.round(envLab.a)}, ${Math.round(envLab.b)})`);
 
     // Add new color to l-plot
     const capturedColorL = document.createElementNS("http://www.w3.org/2000/svg", 'line');
@@ -270,6 +276,32 @@ captureButton.addEventListener("click", () => {
     }, 250);
 });
 
+
+// Filter by lightness
+lPlot.addEventListener("mousemove", (e) => {
+    const capturedColorsL = document.getElementsByClassName("captured-color-l");
+    const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
+    let bounds = lPlot.getBoundingClientRect();
+    let lightness = (e.clientY - bounds.top) / (bounds.bottom - bounds.top) * 100;
+    for (let i = 0; i < capturedColorsL.length; i++) {
+        if (parseFloat(capturedColorsL[i].getAttribute('y1')) > lightness) {
+            capturedColorsL[i].style.display = 'none';
+            capturedColorsAb[i].style.display = 'none';
+        } else {
+            capturedColorsL[i].style.display = null;
+            capturedColorsAb[i].style.display = null;
+        }
+    }
+});
+lPlot.addEventListener("mouseleave", (e) => {
+    const capturedColorsL = document.getElementsByClassName("captured-color-l");
+    const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
+    for (let i = 0; i < capturedColorsL.length; i++) {
+        capturedColorsL[i].style.display = null;
+        capturedColorsAb[i].style.display = null;
+    }
+});
+
 // Set reference white
 canvas.addEventListener("click", () => {
     const rgb = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
@@ -288,12 +320,12 @@ canvas.addEventListener("click", () => {
 // Click blank to remove all captures
 abPlot.addEventListener("click", () => {
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
-    capturedColorsL[capturedColorsL.length - 1].remove();
     const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
+    capturedColorsL[capturedColorsL.length - 1].remove();
     capturedColorsAb[capturedColorsAb.length - 1].remove();
 });
 
-
+// Request camera access
 document.addEventListener('DOMContentLoaded', () => {
     overlayOption.addEventListener('click', () => {
         // Request camera access
