@@ -313,7 +313,7 @@ function filterByHue (e) {
     if (mouseChroma >= 100 && mouseChroma < 125) {
         hueFilterWindow = hueFilterWindow - 0.5 * hueFilterWindow * ((mouseChroma - 100) / 100 * 4) ** 2;
     } else if (mouseChroma >= 125) {
-        hueFilterWindow = Math.max(0, -hueFilterWindow * 4 * (mouseChroma / 100 - 1) + hueFilterWindow / 2);
+        hueFilterWindow = Math.max(0, -hueFilterWindow * 2 * (mouseChroma / 100 - 1.25) + hueFilterWindow / 2);
     }
     // console.log(mouseChroma, Math.PI / hueFilterWindow);
     for (let i = 0; i < capturedColorsL.length; i++) {
