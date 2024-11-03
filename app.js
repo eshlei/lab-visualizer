@@ -86,9 +86,9 @@ class StandardObserver {
         const d65WhiteZ = 1.08883;
 
         // Adjusted XYZ values based on custom white
-        x = x / this.white * d65WhiteX;
-        y = y / this.white * d65WhiteY;
-        z = z / this.white * d65WhiteZ;
+        x = x / this.whiteX * d65WhiteX;
+        y = y / this.whiteY * d65WhiteY;
+        z = z / this.whiteZ * d65WhiteZ;
         
         // Convert XYZ to linear RGB
         let r = x * 3.2406 + y * -1.5372 + z * -0.4986;
