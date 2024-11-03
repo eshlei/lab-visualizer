@@ -228,7 +228,7 @@ setInterval(() => {
     centerPixelAb.setAttribute('cx', AbPlotCoords.x);
     centerPixelAb.setAttribute('cy', AbPlotCoords.y);
     centerPixelAb.setAttribute('fill', `RGB(${meanRgb.r},${meanRgb.g},${meanRgb.b})`);
-    // svgText.textContent = `L*:${Math.round(meanLab.l)}, a*:${Math.round(meanLab.a)}, b*:${Math.round(meanLab.b)}`;
+    svgText.textContent = `L*:${Math.round(meanLab.l)}, a*:${Math.round(meanLab.a)}, b*:${Math.round(meanLab.b)}`;
 }, 100);
 
 // Capture color
@@ -238,6 +238,8 @@ captureButton.addEventListener("click", () => {
     const d65Rgb = d65Observer.labToRgb(envLab.l, envLab.a, envLab.b);
     const lPlotCoords = labToLPlot(envLab.l, envLab.a, envLab.b);
     const abPlotCoords = labToAbPlot(envLab.l, envLab.a, envLab.b);
+
+    console.log(`(${Math.round(envRgb.r)}, ${Math.round(envRgb.g)}, ${Math.round(envRgb.b)}), (${Math.round(envLab.l)}, ${Math.round(envLab.a)}, ${Math.round(envLab.b)})`);
 
     // Add new color to l-plot
     const capturedColorL = document.createElementNS("http://www.w3.org/2000/svg", 'line');
