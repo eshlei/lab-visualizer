@@ -20,6 +20,9 @@ var recentSamples = [];
 
 class StandardObserver {
     constructor(whiteX = 0.95047, whiteY = 1.00000, whiteZ = 1.08883) {
+        this.d65WhiteX = 0.95047;
+        this.d65WhiteY = 1.00000;
+        this.d65WhiteZ = 1.08883;
         this.whiteX = whiteX;
         this.whiteY = whiteY;
         this.whiteZ = whiteZ;
@@ -46,18 +49,8 @@ class StandardObserver {
         const x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
         const y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
         const z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
-    
-        // Scale XYZ values to custom reference white
-        const d65WhiteX = 0.95047;
-        const d65WhiteY = 1.00000;
-        const d65WhiteZ = 1.08883;
 
-        // Adjusted XYZ values based on custom white
-        return {
-            x: (x / d65WhiteX) * this.whiteX,
-            y: (y / d65WhiteY) * this.whiteY,
-            z: (z / d65WhiteZ) * this.whiteZ
-        };
+        return { x, y, z };
     }
 
     xyzToLab(x, y, z) {
@@ -80,16 +73,6 @@ class StandardObserver {
     }
 
     xyzToRgb(x, y, z) {
-        // Scale XYZ values to custom reference white
-        const d65WhiteX = 0.95047;
-        const d65WhiteY = 1.00000;
-        const d65WhiteZ = 1.08883;
-
-        // Adjusted XYZ values based on custom white
-        x = x / this.whiteX * d65WhiteX;
-        y = y / this.whiteY * d65WhiteY;
-        z = z / this.whiteZ * d65WhiteZ;
-        
         // Convert XYZ to linear RGB
         let r = x * 3.2406 + y * -1.5372 + z * -0.4986;
         let g = x * -0.9689 + y * 1.8758 + z * 0.0415;
@@ -129,6 +112,7 @@ class StandardObserver {
         let yr = y3 > 0.008856 ? y3 : (y - 16 / 116) / 7.787;
         let zr = z3 > 0.008856 ? z3 : (z - 16 / 116) / 7.787;
         
+        // De-normalize by reference white
         xr *= this.whiteX;
         yr *= this.whiteY;
         zr *= this.whiteZ;
@@ -302,13 +286,9 @@ canvas.addEventListener("click", () => {
 // Click blank to remove all captures
 abPlot.addEventListener("click", () => {
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
-    while (capturedColorsL.length) {
-        capturedColorsL[0].remove();
-    }
+    capturedColorsL[capturedColorsL.length - 1].remove();
     const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
-    while (capturedColorsAb.length) {
-        capturedColorsAb[0].remove();
-    }
+    capturedColorsAb[capturedColorsAb.length - 1].remove();
 });
 
 
