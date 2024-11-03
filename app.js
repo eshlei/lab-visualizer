@@ -279,12 +279,13 @@ captureButton.addEventListener("click", () => {
 
 // Filter by lightness
 function mousemove (e) {
-    e.preventDefault();
-    e.stopPropagation();
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
     const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
     let bounds = lPlot.getBoundingClientRect();
     let lightness = (e.clientY - bounds.top) / (bounds.bottom - bounds.top) * 100;
+    if (e.touches) {
+        lightness = (e.touches[0].clientY - bounds.top) / (bounds.bottom - bounds.top) * 100;
+    }
     for (let i = 0; i < capturedColorsL.length; i++) {
         if (parseFloat(capturedColorsL[i].getAttribute('y1')) > lightness) {
             capturedColorsL[i].style.display = 'none';
