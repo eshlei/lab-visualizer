@@ -410,7 +410,7 @@ sidePanel.addEventListener("click", () => {
 // Constrain aspect ratio
 function adjustAspectRatio() {
     const container = document.getElementById('container');
-    const maxAspectRatio = 1 / 1.8;
+    const maxAspectRatio = 1 / 1.6;
     const minAspectRatio = 1 / 3;
     const containerWidth = container.offsetWidth;
     const containerHeight = container.offsetHeight;
@@ -419,16 +419,17 @@ function adjustAspectRatio() {
     if (currentAspectRatio > maxAspectRatio) {
         container.style.width = containerHeight * maxAspectRatio + 'px';
         container.style.height = '100%';
-        alert('too wide');
     } else if (currentAspectRatio < minAspectRatio) {
         container.style.width = '100%';
         container.style.height = containerWidth / minAspectRatio + 'px';
-        alert('too tall');
+    } else {
+        container.style.width = '100%';
+        container.style.height = '100%';
     }
-    alert(containerWidth + ',' + containerHeight + ',' + currentAspectRatio);
 }
 document.addEventListener('DOMContentLoaded', () => {
     adjustAspectRatio();
+    window.addEventListener('resize', adjustAspectRatio);
 
     // Request camera access
     overlayOption.addEventListener('click', () => {
