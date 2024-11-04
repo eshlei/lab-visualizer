@@ -441,18 +441,19 @@ function adjustAspectRatio() {
     const container = document.getElementById('container');
     const maxAspectRatio = 1 / 1.8;
     const minAspectRatio = 1 / 3;
-    const containerWidth = window.innerWidth;
-    const containerHeight = window.innerHeight;
+    const containerWidth = container.offsetWidth;
+    const containerHeight = container.offsetHeight;
     const currentAspectRatio = containerWidth / containerHeight;
 
     if (currentAspectRatio > maxAspectRatio) {
-        container.style.height = '100%';
         container.style.width = containerHeight * maxAspectRatio + 'px';
-        alert('too wide');
+        container.style.height = '100%';
     } else if (currentAspectRatio < minAspectRatio) {
         container.style.width = '100%';
         container.style.height = containerWidth / minAspectRatio + 'px';
-        alert('too tall');
+    } else {
+        container.style.width = '100%';
+        container.style.height = '100%';
     }
 }
 window.addEventListener('resize', adjustAspectRatio);
