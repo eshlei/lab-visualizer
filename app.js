@@ -422,13 +422,10 @@ function adjustAspectRatio() {
     } else if (currentAspectRatio < minAspectRatio) {
         container.style.width = '100%';
         container.style.height = containerWidth / minAspectRatio + 'px';
-    } else {
-        container.style.width = '100%';
-        container.style.height = '100%';
     }
+    console.log(containerWidth + ',' + containerHeight);
 }
 document.addEventListener('DOMContentLoaded', () => {
-    window.addEventListener('resize', adjustAspectRatio);
     adjustAspectRatio();
 
     // Request camera access
