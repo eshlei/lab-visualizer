@@ -455,6 +455,8 @@ function adjustAspectRatio() {
         container.style.width = '100vw';
         container.style.height = '100vh';
     }
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
 }
 window.addEventListener('resize', adjustAspectRatio);
 window.addEventListener('load', adjustAspectRatio);
