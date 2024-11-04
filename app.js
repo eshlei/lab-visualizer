@@ -407,8 +407,31 @@ sidePanel.addEventListener("click", () => {
     capturedColorsAb[capturedColorsAb.length - 1].remove();
 });
 
-// Request camera access
+// Constrain aspect ratio
+function adjustAspectRatio() {
+    const container = document.getElementById('container');
+    const maxAspectRatio = 1 / 1.8;
+    const minAspectRatio = 1 / 3;
+    const containerWidth = container.offsetWidth;
+    const containerHeight = container.offsetHeight;
+    const currentAspectRatio = containerWidth / containerHeight;
+
+    if (currentAspectRatio > maxAspectRatio) {
+        container.style.width = containerHeight * maxAspectRatio + 'px';
+        container.style.height = '100%';
+    } else if (currentAspectRatio < minAspectRatio) {
+        container.style.width = '100%';
+        container.style.height = containerWidth / minAspectRatio + 'px';
+    } else {
+        container.style.width = '100%';
+        container.style.height = '100%';
+    }
+}
 document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('resize', adjustAspectRatio);
+    adjustAspectRatio();
+
+    // Request camera access
     overlayOption.addEventListener('click', () => {
         // Request camera access
         navigator.mediaDevices.getUserMedia({video: {facingMode: {exact: 'environment'}}})
@@ -435,26 +458,3 @@ document.addEventListener('DOMContentLoaded', () => {
         overlayBackground.style.display = 'none';
     }, { once: true });
 });
-
-// Constrain aspect ratio
-/*function adjustAspectRatio() {
-    const container = document.getElementById('container');
-    const maxAspectRatio = 1 / 1.8;
-    const minAspectRatio = 1 / 3;
-    const containerWidth = container.offsetWidth;
-    const containerHeight = container.offsetHeight;
-    const currentAspectRatio = containerWidth / containerHeight;
-
-    if (currentAspectRatio > maxAspectRatio) {
-        container.style.width = containerHeight * maxAspectRatio + 'px';
-        container.style.height = '100%';
-    } else if (currentAspectRatio < minAspectRatio) {
-        container.style.width = '100%';
-        container.style.height = containerWidth / minAspectRatio + 'px';
-    } else {
-        container.style.width = '100%';
-        container.style.height = '100%';
-    }
-}
-window.addEventListener('resize', adjustAspectRatio);
-window.addEventListener('load', adjustAspectRatio);*/
