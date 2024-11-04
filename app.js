@@ -423,7 +423,7 @@ function adjustAspectRatio() {
         container.style.width = '100%';
         container.style.height = containerWidth / minAspectRatio + 'px';
     }
-    console.log(containerWidth + ',' + containerHeight);
+    alert(containerWidth + ',' + containerHeight);
 }
 document.addEventListener('DOMContentLoaded', () => {
     adjustAspectRatio();
