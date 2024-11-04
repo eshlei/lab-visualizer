@@ -446,14 +446,14 @@ function adjustAspectRatio() {
     const currentAspectRatio = containerWidth / containerHeight;
 
     if (currentAspectRatio > maxAspectRatio) {
-        container.style.height = '100vh';
+        container.style.height = '100%';
         container.style.width = containerHeight * maxAspectRatio + 'px';
     } else if (currentAspectRatio < minAspectRatio) {
-        container.style.width = '100vw';
+        container.style.width = '100%';
         container.style.height = containerWidth / minAspectRatio + 'px';
     } else {
-        container.style.width = '100vw';
-        container.style.height = '100vh';
+        container.style.width = '100%';
+        container.style.height = '100%';
     }
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
