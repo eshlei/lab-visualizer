@@ -7,6 +7,7 @@ const lPlot = document.getElementById('l-plot');
 const centerPixelL = document.getElementById('center-pixel-l');
 const abPlot = document.getElementById('ab-plot');
 const centerPixelAb = document.getElementById('center-pixel-ab');
+const sidePanel = document.getElementById('side-panel');
 const svgText = document.getElementById('svg-text');
 const svgTextL = document.getElementById('svg-text-l');
 const svgTextA = document.getElementById('svg-text-a');
@@ -399,7 +400,7 @@ canvas.addEventListener("click", () => {
 });
 
 // Click blank to remove most recent captures
-abPlot.addEventListener("click", () => {
+sidePanel.addEventListener("click", () => {
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
     const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
     capturedColorsL[capturedColorsL.length - 1].remove();
