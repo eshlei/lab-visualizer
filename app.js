@@ -403,8 +403,10 @@ canvas.addEventListener("click", () => {
 sidePanel.addEventListener("click", () => {
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
     const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
-    capturedColorsL[capturedColorsL.length - 1].remove();
-    capturedColorsAb[capturedColorsAb.length - 1].remove();
+    if (capturedColorsL.length) {
+        capturedColorsL[capturedColorsL.length - 1].remove();
+        capturedColorsAb[capturedColorsAb.length - 1].remove();
+    }
 });
 
 // Constrain aspect ratio
