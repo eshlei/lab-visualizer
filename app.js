@@ -425,7 +425,7 @@ function adjustAspectRatio() {
         container.style.height = containerWidth / minAspectRatio + 'px';
         alert('too tall');
     }
-    alert(containerWidth + ',' + containerHeight);
+    alert(containerWidth + ',' + containerHeight + ',' + currentAspectRatio);
 }
 document.addEventListener('DOMContentLoaded', () => {
     adjustAspectRatio();
