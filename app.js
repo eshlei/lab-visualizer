@@ -451,9 +451,6 @@ function adjustAspectRatio() {
     } else if (currentAspectRatio < minAspectRatio) {
         container.style.width = '100%';
         container.style.height = containerWidth / minAspectRatio + 'px';
-    } else {
-        container.style.width = '100%';
-        container.style.height = '100%';
     }
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
