@@ -448,12 +448,12 @@ function adjustAspectRatio() {
     if (currentAspectRatio > maxAspectRatio) {
         container.style.height = '100%';
         container.style.width = containerHeight * maxAspectRatio + 'px';
+        alert('too wide');
     } else if (currentAspectRatio < minAspectRatio) {
         container.style.width = '100%';
         container.style.height = containerWidth / minAspectRatio + 'px';
+        alert('too tall');
     }
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
 }
 window.addEventListener('resize', adjustAspectRatio);
 window.addEventListener('load', adjustAspectRatio);
