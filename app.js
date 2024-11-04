@@ -223,20 +223,20 @@ setInterval(() => {
     centerPixelL.setAttribute('y1', lPlotCoords.y);
     centerPixelL.setAttribute('y2', lPlotCoords.y);
     centerPixelL.setAttribute('stroke', `RGB(${meanRgb.r},${meanRgb.g},${meanRgb.b})`);
-    svgTextL.textContent = '\u00A0'.repeat(2 - `${Math.round(meanLab.l)}`.length) + Math.round(meanLab.l);
+    svgTextL.textContent = '\u00A0'.repeat(Math.max(0, 2 - `${Math.round(meanLab.l)}`.length)) + Math.round(meanLab.l);
 
     // Update ab-plot
     const AbPlotCoords = labToAbPlot(meanLab.l, meanLab.a, meanLab.b);
     centerPixelAb.setAttribute('cx', AbPlotCoords.x);
     centerPixelAb.setAttribute('cy', AbPlotCoords.y);
     centerPixelAb.setAttribute('fill', `RGB(${meanRgb.r},${meanRgb.g},${meanRgb.b})`);
-    svgTextA.textContent = '\u00A0'.repeat(3 - `${Math.round(meanLab.a)}`.length) + Math.round(meanLab.a);
-    svgTextB.textContent = '\u00A0'.repeat(3 - `${Math.round(meanLab.b)}`.length) + Math.round(meanLab.b);
+    svgTextA.textContent = '\u00A0'.repeat(Math.max(0, 3 - `${Math.round(meanLab.a)}`.length)) + Math.round(meanLab.a);
+    svgTextB.textContent = '\u00A0'.repeat(Math.max(0, 3 - `${Math.round(meanLab.b)}`.length)) + Math.round(meanLab.b);
     // svgText.textContent = `L*:${Math.round(meanLab.l)}, a*:${Math.round(meanLab.a)}, b*:${Math.round(meanLab.b)}`;
-}, 100);
+}, 40);
 
 // Capture color
-captureButton.addEventListener("click", () => {
+function capture() {
     const envRgb = getPixel(canvas.offsetWidth / 2, canvas.offsetHeight / 2);
     const envLab = envObserver.rgbToLab(envRgb.r, envRgb.g, envRgb.b);
     const d65Rgb = d65Observer.labToRgb(envLab.l, envLab.a, envLab.b);
@@ -267,13 +267,21 @@ captureButton.addEventListener("click", () => {
     capturedColorAb.setAttribute('r', 1.5);
     capturedColorAb.setAttribute('fill', `RGB(${d65Rgb.r},${d65Rgb.g},${d65Rgb.b})`);
     abPlot.insertBefore(capturedColorAb, centerPixelAb);
-    
-    canvasWrapper.style.background = "#909090";
-    setTimeout(() => {
-        canvasWrapper.style.background = "#f0f0f0";
-    }, 250);
+}
+var intervalId = null;
+captureButton.addEventListener("mousedown", (e) => {
+    canvasWrapper.style.background = '#909090';
+    capture();
+    intervalId = setInterval(() => {
+        capture();
+        clearInterval(intervalId);
+        intervalId = setInterval(capture, 100, 'capture');
+    }, 250, 'capture');
 });
-
+captureButton.addEventListener("mouseup", (e) => {
+    clearInterval(intervalId);
+    canvasWrapper.style.background = '#f0f0f0';
+});
 
 // Filter by lightness or hue
 function filterByLightness (e) {
@@ -381,7 +389,7 @@ canvas.addEventListener("click", () => {
     }, 250);
 });
 
-// Click blank to remove all captures
+// Click blank to remove most recent captures
 abPlot.addEventListener("click", () => {
     const capturedColorsL = document.getElementsByClassName("captured-color-l");
     const capturedColorsAb = document.getElementsByClassName("captured-color-ab");
