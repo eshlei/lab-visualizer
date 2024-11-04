@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function adjustAspectRatio() {
     const container = document.getElementById('container');
     const maxAspectRatio = 1 / 1.8;
-    const minAspectRatio = 1 / 2.4;
+    const minAspectRatio = 1 / 3;
     const containerWidth = window.innerWidth;
     const containerHeight = window.innerHeight;
     const currentAspectRatio = containerWidth / containerHeight;
