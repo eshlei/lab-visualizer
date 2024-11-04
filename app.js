@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Constrain aspect ratio
-function adjustAspectRatio() {
+/*function adjustAspectRatio() {
     const container = document.getElementById('container');
     const maxAspectRatio = 1 / 1.8;
     const minAspectRatio = 1 / 3;
@@ -457,4 +457,4 @@ function adjustAspectRatio() {
     }
 }
 window.addEventListener('resize', adjustAspectRatio);
-window.addEventListener('load', adjustAspectRatio);
+window.addEventListener('load', adjustAspectRatio);*/
