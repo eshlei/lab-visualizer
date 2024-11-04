@@ -317,7 +317,7 @@ function filterByHue (e) {
     let mouseB = (50 - mouseY) / abPlotRad * 100;
     let mouseHue = Math.atan2(mouseB, mouseA);
     let mouseChroma = Math.sqrt(mouseA ** 2 + mouseB ** 2);
-    let hueFilterWindow = Math.PI / 12;
+    let hueFilterWindow = Math.PI / 6;
     if (mouseChroma >= 100 && mouseChroma < 125) {
         hueFilterWindow = hueFilterWindow - 0.5 * hueFilterWindow * ((mouseChroma - 100) / 100 * 4) ** 2;
     } else if (mouseChroma >= 125) {
