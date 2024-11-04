@@ -434,3 +434,26 @@ document.addEventListener('DOMContentLoaded', () => {
         overlayBackground.style.display = 'none';
     }, { once: true });
 });
+
+// Constrain aspect ratio
+function adjustAspectRatio() {
+    const container = document.getElementById('container');
+    const maxAspectRatio = 1 / 1.8;
+    const minAspectRatio = 1 / 2.4;
+    const containerWidth = window.innerWidth;
+    const containerHeight = window.innerHeight;
+    const currentAspectRatio = containerWidth / containerHeight;
+
+    if (currentAspectRatio > maxAspectRatio) {
+        container.style.height = '100vh';
+        container.style.width = containerHeight * maxAspectRatio + 'px';
+    } else if (currentAspectRatio < minAspectRatio) {
+        container.style.width = '100vw';
+        container.style.height = containerWidth / minAspectRatio + 'px';
+    } else {
+        container.style.width = '100vw';
+        container.style.height = '100vh';
+    }
+}
+window.addEventListener('resize', adjustAspectRatio);
+window.addEventListener('load', adjustAspectRatio);
