@@ -269,19 +269,28 @@ function capture() {
     abPlot.insertBefore(capturedColorAb, centerPixelAb);
 }
 var intervalId = null;
-captureButton.addEventListener("mousedown", (e) => {
-    canvasWrapper.style.background = '#909090';
+function mousedown(e) {
+    e.preventDefault();
+    e.stopPropagation();
     capture();
     intervalId = setInterval(() => {
         capture();
         clearInterval(intervalId);
         intervalId = setInterval(capture, 100, 'capture');
     }, 250, 'capture');
-});
-captureButton.addEventListener("mouseup", (e) => {
+    canvasWrapper.style.background = '#909090';
+}
+function mouseup(e) {
+    e.preventDefault();
+    e.stopPropagation();
     clearInterval(intervalId);
     canvasWrapper.style.background = '#f0f0f0';
-});
+}
+captureButton.addEventListener("mousedown", mousedown);
+captureButton.addEventListener("touchstart", mousedown);
+captureButton.addEventListener("mouseup", mouseup);
+captureButton.addEventListener("touchend", mouseup);
+captureButton.addEventListener("touchcancel", mouseup);
 
 // Filter by lightness or hue
 function filterByLightness (e) {
